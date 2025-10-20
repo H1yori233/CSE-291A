@@ -1,0 +1,29 @@
+{
+    "task_name": "Extract Text from an Image and Save to a Document",
+    "single-action": [
+        "`OPEN` gImageReader",
+        "`CLICK` Open File…",
+        "`SELECT` /home/user/Pictures/note.png",
+        "`CLICK` Recognize",
+        "`WAIT` until text appears",
+        "`SELECT_ALL` recognized text",
+        "`HOTKEY` Ctrl+C",
+        "`OPEN` LibreOffice Writer",
+        "`HOTKEY` Ctrl+V",
+        "`CLICK` File > Save As…",
+        "`TYPE` /home/user/Documents/note_text.odt && `ENTER`"
+    ],
+    "grouped-action": [
+        [
+            "`OPEN` gImageReader",
+            "`LOAD_IMAGE` note.png",
+            "`OCR_RECOGNIZE`"
+        ],
+        [
+            "`COPY_TEXT`",
+            "`OPEN` Writer",
+            "`PASTE_TEXT`",
+            "`SAVE_FILE` note_text.odt"
+        ]
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "task_name": "Schedule a Reminder in Calendar about a Team Sync Meeting next Friday at 2 p.m. and Confirm Notification (Angting Cai)",
+    "single-action": [
+        "`OPEN` GNOME Calendar",
+        "`CLICK` New Event (+) button",
+        "`TYPE` Team Sync Meeting in title field",
+        "`CLICK` Date field",
+        "`SELECT_DATE` next Friday",
+        "`CLICK` Time field",
+        "`TYPE` 14:00",
+        "`CLICK` Add Reminder",
+        "`SELECT` 10 minutes before",
+        "`CLICK` Save",
+        "`WAIT` until reminder time arrives (simulate 10 minutes before 14:00)",
+        "`OBSERVE` desktop notification appears with text 'Team Sync Meeting starting soon'",
+        "`SCREENSHOT` notification window",
+        "`CLOSE` notification"
+    ],
+    "grouped-action": [
+        [
+            "`OPEN` GNOME Calendar",
+            "`CREATE_EVENT` 'Team Sync Meeting' on next Friday 14:00",
+            "`SET_REMINDER` 10 minutes before",
+            "`SAVE_EVENT`"
+        ],
+        [
+            "`WAIT` for reminder trigger",
+            "`VERIFY_NOTIFICATION` 'Team Sync Meeting starting soon'",
+            "`CAPTURE_SCREENSHOT` notification"
+        ]
+    ]
+}
