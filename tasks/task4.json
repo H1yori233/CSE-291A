@@ -1,0 +1,30 @@
+{
+    "task_name": "Resolve a Git Merge Conflict",
+    "instruction": "Open VS Code, navigate to the 'my-project' repository, open the 'src/main.js' file, resolve the merge conflict markers, save the file, and then commit the changes with the message 'Resolve merge conflict'.",
+    "single-action": [
+        "`OPEN_APP` 'VS Code'",
+        "`OPEN_FOLDER` '/home/user/my-project'",
+        "`OPEN_FILE` '/home/user/my-project/src/main.js'",
+        "`FIND_TEXT` '<<<<<<< HEAD'",
+        "`REPLACE_TEXT` '<<<<<<< HEAD\\nconsole.log(\"Feature A\");\\n=======\\nconsole.log(\"Feature B\");\\n>>>>>>> feature-branch' with 'console.log(\"Feature A & B\");'",
+        "`SAVE_FILE`",
+        "`CLICK` 'Source Control' icon",
+        "`CLICK` 'Commit' button",
+        "`TYPE` 'Resolve merge conflict' into commit message box",
+        "`CLICK` 'Commit' button (confirming the message)",
+        "`CLOSE_APP` 'VS Code'"
+    ],
+    "grouped-action": [
+        [
+            "`OPEN_VS_CODE_REPO` '/home/user/my-project'",
+            "`OPEN_FILE_IN_EDITOR` 'src/main.js'"
+        ],
+        [
+            "`RESOLVE_MERGE_CONFLICT` 'src/main.js' with 'console.log(\"Feature A & B\");'",
+            "`SAVE_FILE` 'src/main.js'"
+        ],
+        [
+            "`COMMIT_CHANGES` 'Resolve merge conflict'"
+        ]
+    ]
+}

@@ -12,8 +12,18 @@ Researchers and educators often need to record and edit short audio clips—for 
 
 This task challenges an ECUA to manage time-sensitive and multi-application steps: recording audio of fixed duration, trimming a waveform, and exporting to another format. Humans rely on visual and auditory cues for such operations, but a local agent must reason over timing, GUI state, and file conversion autonomously. It’s a compact yet realistic test of multimodal control under edge-device constraints.
 
+### Task 4
+Resolving merge conflicts is a fundamental and daily task for anyone in software development or collaborative research using Git. Using a modern IDE like VS Code to visually identify the conflicting blocks, edit the file to incorporate the correct changes, and commit the resolution is a standard, real-world workflow. 
+
+For ECUA evaluation, this task tests the agent's ability to perform complex, in-application reasoning within a single, sophisticated tool.
+
 ### Task 6
 This task serves as a multi-app use case. It originates from some daily productivity use cases such as digitizing handwritten notes. It evaluates visual understanding (image-to-text), clipboard control, multi-application sequencing, and file export consistency. Besides, it also shows whether an agent can manage perception + action coherently.
+
+### Task 7
+Broken symbolic links are a common and frustrating problem in Linux-based environments, frequently encountered by developers, and researchers. These issues arise when a target file is moved, renamed, or deleted, causing any symlink pointing to it to fail and potentially breaking scripts or applications.
+
+The process of identifying a broken link and then repairing it is a basic skill for any terminal user. This task is a pure test of the agent's proficiency in a Command Line Interface (CLI) environment.
 
 ### Task 10
 This task is inspired by bilingual writing workflows. It combines copy/paste, window focus management reading comprehension, and assesses whether the agent can integrate tool use with semantic understanding.
