@@ -1,0 +1,24 @@
+{
+  "task_name": "Convert Markdown Notes to PDF and Merge with an Existing Report",
+  "instruction": "Open Typora to export notes.md in Documents as notes.pdf, then open PDF Arranger to merge it with report.pdf into Desktop/final_report.pdf.",
+  "related_apps": ["typora", "pdfarranger"],
+  "single-action": [
+    "`OPEN_APP` 'Typora'",
+    "`OPEN_FILE` '/home/user/Documents/notes.md'",
+    "`CLICK` 'File > Export > PDF'",
+    "`SAVE_FILE_AS` '/home/user/Documents/notes.pdf'",
+    "`CLOSE_APP` 'Typora'",
+    "`OPEN_APP` 'PDF Arranger'",
+    "`ADD_FILE` '/home/user/Documents/notes.pdf'",
+    "`ADD_FILE` '/home/user/Documents/report.pdf'",
+    "`CLICK` 'Save As…'",
+    "`TYPE` '/home/user/Desktop/final_report.pdf'",
+    "`CLICK` 'Save'",
+    "`CLOSE_APP` 'PDF Arranger'"
+  ],
+  "grouped-action": [
+    ["`EXPORT_MD_TO_PDF` 'notes.md' → 'notes.pdf'"],
+    ["`MERGE_PDFS` 'notes.pdf' + 'report.pdf' → 'final_report.pdf'"]
+  ]
+  
+}
