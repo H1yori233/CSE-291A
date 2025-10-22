@@ -1,0 +1,22 @@
+{
+  "task_name": "Record Audio, Trim Clip, and Save as MP3",
+  "instruction": "Use GNOME Sound Recorder to record a 10-second clip and save as raw.wav. Then open it in Audacity, trim the first 2 s of silence, and export to Desktop as final.mp3.",
+  "related_apps": ["gnome-sound-recorder", "audacity"],
+  "single-action": [
+    "`OPEN_APP` 'GNOME Sound Recorder'",
+    "`CLICK` 'Record'",
+    "`WAIT` 10 seconds",
+    "`CLICK` 'Stop'",
+    "`SAVE_FILE_AS` '/home/user/Music/raw.wav'",
+    "`OPEN_APP` 'Audacity'",
+    "`OPEN_FILE` '/home/user/Music/raw.wav'",
+    "`SELECT_RANGE` '0s-2s'",
+    "`DELETE_SELECTION`",
+    "`EXPORT_AS` '/home/user/Desktop/final.mp3'",
+    "`CLOSE_APP` 'Audacity'"
+  ],
+  "grouped-action": [
+    ["`RECORD_AUDIO` 10s → '/home/user/Music/raw.wav'"],
+    ["`TRIM_AUDIO` first 2s", "`EXPORT_AUDIO` '/home/user/Desktop/final.mp3'"]
+  ]
+}
