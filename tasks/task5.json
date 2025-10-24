@@ -1,0 +1,35 @@
+{
+  "task_name": "Download a Logo, Crop & Resize, and Insert into a Slide",
+  "instruction": "Use Firefox to download a logo image, crop and resize it in GIMP, then insert it into a LibreOffice Impress slide and save the presentation.",
+  "related_apps": ["firefox", "gimp", "libreoffice-impress"],
+  "single-action": [
+    "`OPEN` 'Firefox'",
+    "`TYPE` 'Ubuntu logo PNG transparent' into address bar",
+    "`ENTER`",
+    "`RIGHT_CLICK` on a suitable logo image",
+    "`CLICK` 'Save Image As…'",
+    "`TYPE` '/home/user/Downloads/logo.png' and `ENTER`",
+    "`OPEN` 'GIMP'",
+    "`OPEN_FILE` '/home/user/Downloads/logo.png'",
+    "`SELECT_TOOL` 'Crop'",
+    "`CROP_RECT` 'center square'",
+    "`APPLY_CROP`",
+    "`CLICK` 'Image > Scale Image…'",
+    "`TYPE` '256' for width and height",
+    "`CLICK` 'Scale'",
+    "`EXPORT_AS` '/home/user/Pictures/logo_256.png'",
+    "`OPEN` 'LibreOffice Impress'",
+    "`CLICK` 'New Presentation'",
+    "`INSERT_IMAGE` '/home/user/Pictures/logo_256.png'",
+    "`POSITION_IMAGE` 'top-right'",
+    "`SAVE_FILE_AS` '/home/user/Desktop/branding.odp'",
+    "`CLOSE_APP` 'LibreOffice Impress'"
+  ],
+  "grouped-action": [
+    ["`DOWNLOAD_IMAGE` 'logo.png' to '/home/user/Downloads'"],
+    ["`CROP_IMAGE` square", "`RESIZE_IMAGE` 256x256", "`EXPORT_IMAGE` '/home/user/Pictures/logo_256.png'"],
+    ["`CREATE_SLIDE`", "`INSERT_IMAGE` logo_256.png", "`SAVE_PRESENTATION` 'branding.odp'"]
+  ]
+}
+
+
