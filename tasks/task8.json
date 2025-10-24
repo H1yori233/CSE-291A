@@ -1,0 +1,17 @@
+{
+  "task_name": "Find the 5 Largest Files in Downloads, Save & View Results",
+  "instruction": "Recursively find files under /home/user/Downloads, sort by size, take top 5, format sizes, save to /home/user/Desktop/top5_downloads.txt, then display the results.",
+  "single-action": [
+    "`TYPE` 'find /home/user/Downloads -type f -printf \\\"%s\\t%p\\\\n\\\" | sort -nr | head -n 5 | numfmt --to=iec --suffix=B --field=1 > /home/user/Desktop/top5_downloads.txt\' and `ENTER`",
+    "`TYPE` 'column -t /home/user/Desktop/top5_downloads.txt || cat /home/user/Desktop/top5_downloads.txt' and `ENTER`",
+  ],
+  "grouped-action": [
+    [
+      "`COMPUTE_TOP_N_LARGEST_FILES` '/home/user/Downloads' N=5 → '/home/user/Desktop/top5_downloads.txt'"
+    ],
+    [
+      "`VIEW_FILE` '/home/user/Desktop/top5_downloads.txt'",
+      "`VERIFY` 5 lines, human-readable sizes"
+    ]
+  ]
+}
