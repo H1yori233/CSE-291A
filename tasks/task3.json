@@ -1,0 +1,18 @@
+{
+  "task_name": "Monitor Top CPU Processes and Log for 5s (CLI)",
+  "instruction": "Use top in batch mode to capture CPU usage for 5 seconds and save to /home/user/Desktop/top_cpu_5s.log, then open the log to view.",
+  "single-action": [
+    "`TYPE` 'top -b -d 1 -n 5 | tee /home/user/Desktop/top_cpu_5s.log' and `ENTER`",
+    "`WAIT` until the command finishes (5s)",
+    "`TYPE` 'less /home/user/Desktop/top_cpu_5s.log' and `ENTER`",
+  ],
+  "grouped-action": [
+    [
+      "`CAPTURE_CPU_SNAPSHOTS` 'top -b -d 1 -n 5' → '/home/user/Desktop/top_cpu_5s.log'"
+    ],
+    [
+      "`VIEW_FILE` '/home/user/Desktop/top_cpu_5s.log' with 'less'",
+      "`VERIFY` contains PID and %CPU columns across snapshots"
+    ]
+  ]
+}
