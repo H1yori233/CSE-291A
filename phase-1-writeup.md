@@ -17,15 +17,15 @@ This is common in troubleshooting: quickly sampling CPU-heavy processes and savi
 
 In this task, agent must time-boundedly capture output, and combine flags and redirection when using CLI.
 
-### Task 5
-Branding and presentation preparation often require pulling a logo from the web, cleaning it up, and integrating it into slides. The workflow of downloading an image, cropping and resizing in a raster editor (e.g., GIMP), and inserting it into a LibreOffice Impress slide mirrors a common academic/industry practice when assembling talk decks or course materials.
-
-For ECUA evaluation, this task tests cross-application sequencing, visual operations (crop/resize), and correct asset placement inside a slide. It evaluates whether the agent can manage browser save locations, image editing parameters, and slide insertion with consistent file-path handling.
-
 ### Task 4
 Resolving merge conflicts is a fundamental and daily task for anyone in software development or collaborative research using Git. Using a modern IDE like VS Code to visually identify the conflicting blocks, edit the file to incorporate the correct changes, and commit the resolution is a standard, real-world workflow. 
 
 For ECUA evaluation, this task tests the agent's ability to perform complex, in-application reasoning within a single, sophisticated tool.
+
+### Task 5
+Branding and presentation preparation often require pulling a logo from the web, cleaning it up, and integrating it into slides. The workflow of downloading an image, cropping and resizing in a raster editor (e.g., GIMP), and inserting it into a LibreOffice Impress slide mirrors a common academic/industry practice when assembling talk decks or course materials.
+
+For ECUA evaluation, this task tests cross-application sequencing, visual operations (crop/resize), and correct asset placement inside a slide. It evaluates whether the agent can manage browser save locations, image editing parameters, and slide insertion with consistent file-path handling.
 
 ### Task 6
 This task serves as a multi-app use case. It originates from some daily productivity use cases such as digitizing handwritten notes. It evaluates visual understanding (image-to-text), clipboard control, multi-application sequencing, and file export consistency. Besides, it also shows whether an agent can manage perception + action coherently.
