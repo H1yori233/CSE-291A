@@ -1,4 +1,9 @@
-# Phase 1 write-up 
+# Phase 1 write-up
+
+[repo link](https://github.com/H1yori233/CSE-291A)
+
+**Edge Environment**: A personal computer running Ubuntu 22.04 LTS.
+Reference specs: single **NVIDIA RTX 3090** (24 GB VRAM), 16 vCPUs, and 125 GB RAM.
 
 ## Evaluation Set
 
@@ -47,6 +52,3 @@ For ECUA evaluation, this task measures CLI proficiency, correctness in computin
 
 ### Task 10
 This task is inspired by bilingual writing workflows. It combines copy/paste, window focus management reading comprehension, and assesses whether the agent can integrate tool use with semantic understanding.
-
-## Edge Environment
-RTX 3090 24 GB VRAM 125 GB RAM 16 vCPUs
