@@ -1,0 +1,22 @@
+{
+  "task_name": "Verify and Organize a Download via SHA256 in CLI (Yuxuan)",
+  "instruction": "In '/home/user/Downloads', verify a file's SHA256 against a provided checksum. If it matches, move and rename it into 'Verified'; otherwise move it into 'Corrupted'.",
+  "single-action": [
+    "`EXECUTE_TERMINAL` 'cd /home/user/Downloads'",
+    "`EXECUTE_TERMINAL` 'FILE=testfile.zip'",
+    "`EXECUTE_TERMINAL` 'EXPECTED_SHA256=3b83ef96387f14655fc854ddc3c6bd57e6b34004f9b9e88a3a61e9e5f9f1e031'",
+    "`EXECUTE_TERMINAL` 'ACTUAL_SHA256=$(sha256sum \"$FILE\" | awk \u0027{print $1}\u0027)'",
+    "`EXECUTE_TERMINAL` 'echo \"Expected: $EXPECTED_SHA256\" && echo \"Actual: $ACTUAL_SHA256\"'",
+    "`EXECUTE_TERMINAL` 'mkdir -p Verified Corrupted'",
+    "`EXECUTE_TERMINAL` 'if [ \"$ACTUAL_SHA256\" = \"$EXPECTED_SHA256\" ]; then mv \"$FILE\" \"Verified/${FILE%.zip}-verified.zip\"; else mv \"$FILE\" \"Corrupted/${FILE%.zip}-bad.zip\"; fi'",
+    "`EXECUTE_TERMINAL` 'ls -l Verified Corrupted'",
+    "`VERIFY` that the file is in the correct folder"
+  ],
+  "grouped-action": [
+    ["`COMPUTE_SHA256` 'testfile.zip'"],
+    ["`COMPARE_CHECKSUM` expected vs computed"],
+    ["`ORGANIZE_FILE` into 'Verified' or 'Corrupted'"]
+  ]
+}
+
+
