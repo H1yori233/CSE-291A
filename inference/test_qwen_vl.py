@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import json
 import sys
+import time
 from pathlib import Path
 from typing import Any, Dict
 
@@ -35,7 +36,7 @@ def build_payload(image_data_url: str) -> Dict[str, Any]:
 
 
 def main() -> None:
-    image_path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("/root/test.png")
+    image_path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("./data/logo.png")
     server_url = (
         sys.argv[2]
         if len(sys.argv) > 2
@@ -45,16 +46,30 @@ def main() -> None:
     image_data_url = load_image_as_data_url(image_path)
     payload = build_payload(image_data_url)
 
-    print(f"Sending request to {server_url} with image {image_path}")
-    response = requests.post(
-        server_url,
-        headers={"Content-Type": "application/json"},
-        json=payload,
-        timeout=120,
-    )
+    print(f"Starting loop test on {server_url}")
+    
+    request_count = 0
+    try:
+        while True:
+            start_time = time.time()
+            response = requests.post(
+                server_url,
+                headers={"Content-Type": "application/json"},
+                json=payload,
+                timeout=120,
+            )
+            response.raise_for_status()
+            end_time = time.time()
+            
+            request_count += 1
+            res_json = response.json()
+            content = res_json.get("choices", [{}])[0].get("message", {}).get("content", "")
+            
+            print(f"[{request_count}] Time: {end_time - start_time:.2f}s | Output: {content[:100]}..." if len(content) > 100 else content)
+            print("-" * 40)
 
-    response.raise_for_status()
-    print(json.dumps(response.json(), ensure_ascii=False, indent=2))
+    except KeyboardInterrupt:
+        print("\nTest stopped by user.")
 
 
 if __name__ == "__main__":
