@@ -1,29 +1,45 @@
 {
-    "task_name": "Extract Text from an Image and Save to a Document",
+    "task_name": "Extract Image Text via GUI OCR and Save",
+    "instruction": "Launch gImageReader on Ubuntu, use the File → Open dialog (Ctrl+O) to add /home/ubuntu/note.png, run OCR to extract the text, then save/export the recognized text to /home/ubuntu/note_text.txt. Afterwards, open Gedit and inspect /home/ubuntu/note_text.txt to ensure the OCR text is present.",
+    "related_apps": ["gImageReader", "gedit"],
     "single-action": [
-        "`OPEN` gImageReader",
-        "`CLICK` Open File…",
-        "`SELECT` /home/user/Pictures/note.png",
-        "`CLICK` Recognize",
-        "`WAIT` until text appears",
-        "`SELECT_ALL` recognized text",
-        "`HOTKEY` Ctrl+C",
-        "`OPEN` LibreOffice Writer",
-        "`HOTKEY` Ctrl+V",
-        "`CLICK` File > Save As…",
-        "`TYPE` /home/user/Documents/note_text.odt && `ENTER`"
+        "`OPEN_APP` 'gImageReader'",
+        "`WAIT` 2",
+        "`HOTKEY` 'Ctrl+O'",
+        "`TYPE` \"/home/ubuntu/note.png\"",
+        "`KEY` 'enter'",
+        "`WAIT` 2",
+        "`CLICK` 'Recognize'",
+        "`WAIT` 3",
+        "`CLICK` 'Save'",
+        "`TYPE` \"/home/ubuntu/note_text.txt\"",
+        "`KEY` 'enter'",
+        "`WAIT` 1",
+        "`OPEN_APP` 'Gedit'",
+        "`WAIT` 1",
+        "`HOTKEY` 'Ctrl+O'",
+        "`TYPE` \"/home/ubuntu/note_text.txt\"",
+        "`KEY` 'enter'",
+        "`WAIT` 1",
+        "`VERIFY_TEXT_PRESENT` (confirm OCR text visible)",
+        "`HOTKEY` 'Ctrl+S'",
+        "`CLOSE_APP` 'Gedit'"
     ],
     "grouped-action": [
         [
-            "`OPEN` gImageReader",
-            "`LOAD_IMAGE` note.png",
-            "`OCR_RECOGNIZE`"
+            "`OPEN_APP` 'gImageReader'",
+            "`HOTKEY` 'Ctrl+O'",
+            "`TYPE` \"/home/ubuntu/note.png\"",
+            "`KEY` 'enter'",
+            "`RUN_OCR`",
+            "`EXPORT_TEXT` \"/home/ubuntu/note_text.txt\""
         ],
         [
-            "`COPY_TEXT`",
-            "`OPEN` Writer",
-            "`PASTE_TEXT`",
-            "`SAVE_FILE` note_text.odt"
+            "`OPEN_APP` 'Gedit'",
+            "`OPEN_FILE` \"/home/ubuntu/note_text.txt\"",
+            "`VERIFY_CONTENT`",
+            "`SAVE_FILE`",
+            "`CLOSE_APP`"
         ]
     ]
 }
