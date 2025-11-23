@@ -1,0 +1,56 @@
+# ECUA Framework Dependencies
+# Core dependencies for the Edge Computer-Use Agent
+
+# ============================================
+# REQUIRED DEPENDENCIES
+# ============================================
+
+# LLM API Clients
+openai>=1.0.0
+
+# Computer vision & OCR
+pillow>=10.0.0
+pytesseract>=0.3.10
+
+# GUI automation
+pyautogui>=0.9.54
+pynput>=1.7.6
+pyvirtualdisplay>=3.0.0
+
+# System utilities
+psutil>=5.9.0
+python-dotenv>=1.0.0
+
+# Data & JSON handling
+pydantic>=2.0.0
+jsonschema>=4.20.0
+
+# Logging & monitoring
+colorama>=0.4.6
+tqdm>=4.66.0
+
+# Evaluation
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Utilities
+python-dateutil>=2.8.2
+
+# ============================================
+# OPTIONAL DEPENDENCIES (install separately)
+# ============================================
+
+# For Anthropic Claude models:
+# pip install anthropic
+
+# For PaddleOCR (more accurate OCR):
+# pip install paddleocr
+
+# For Ollama local LLM support:
+# pip install ollama
+
+# For llama.cpp local inference (requires compilation):
+# CMAKE_ARGS="-DLLAMA_METAL=on" pip install llama-cpp-python  # macOS with Metal
+# CMAKE_ARGS="-DLLAMA_CUDA=on" pip install llama-cpp-python   # Linux with CUDA
+# pip install llama-cpp-python                                 # CPU only
+
