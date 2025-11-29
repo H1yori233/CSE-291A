@@ -1,101 +1,149 @@
-"""
-Action Schema for ECUA Agent
-Defines OSWorld-Human style action format
-"""
+"""Action schema aligned with the Computer_13 space described in GUIDE.md."""
 
-from typing import Optional, List, Literal
-from pydantic import BaseModel, Field
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 
-class Action(BaseModel):
+class ActionType(str, Enum):
+    """Enumeration of allowed primitive actions."""
+
+    MOVE_CURSOR = "MOVE_CURSOR"
+    LEFT_CLICK = "LEFT_CLICK"
+    RIGHT_CLICK = "RIGHT_CLICK"
+    DOUBLE_CLICK = "DOUBLE_CLICK"
+    DRAG_AND_DROP = "DRAG_AND_DROP"
+    SCROLL_UP = "SCROLL_UP"
+    SCROLL_DOWN = "SCROLL_DOWN"
+    TYPE = "TYPE"
+    PRESS_KEY = "PRESS_KEY"
+    HOTKEY = "HOTKEY"
+    WAIT = "WAIT"
+    DONE = "DONE"
+    FAIL = "FAIL"
+
+
+@dataclass
+class ActionTarget:
+    """Target for pointer actions.
+
+    type may be "mark" (Set-of-Mark id) or "coordinate" (absolute pixels).
     """
-    Single action that the agent can perform.
-    Follows OSWorld-Human action schema.
-    """
-    action: Literal[
-        "CLICK", "MOVE", "SCROLL", "TYPE", "KEY", 
-        "FOCUS_APP", "OPEN", "EXECUTE", "VERIFY_FILE", "WAIT"
-    ] = Field(..., description="Type of action to perform")
-    
-    x: Optional[int] = Field(None, description="X coordinate for mouse actions")
-    y: Optional[int] = Field(None, description="Y coordinate for mouse actions")
-    
-    target_text: Optional[str] = Field(
-        None, 
-        description="Text to locate on screen (will be resolved to coordinates)"
-    )
-    
-    arg: Optional[str] = Field(
-        None, 
-        description="Argument for action (e.g., text to type, key to press, command to execute)"
-    )
-    
-    amount: Optional[int] = Field(
-        None, 
-        description="Amount for scroll action"
-    )
 
-    class Config:
-        extra = "forbid"  # Don't allow extra fields
+    type: str
+    id: Optional[str] = None
+    x: Optional[int] = None
+    y: Optional[int] = None
+
+    def as_coordinate(self) -> Optional[List[int]]:
+        """Return a `[x, y]` list if enough info is available."""
+
+        if self.type == "coordinate" and self.x is not None and self.y is not None:
+            return [int(self.x), int(self.y)]
+        return None
 
 
-class ActionList(BaseModel):
-    """
-    List of actions to be executed in sequence.
-    This is the format returned by the LLM planner.
-    """
-    actions: List[Action] = Field(..., description="Ordered list of actions to execute")
-    
-    class Config:
-        extra = "forbid"
+@dataclass
+class Action:
+    """Structured action emitted by the language model."""
+
+    action: ActionType
+    source: Optional[ActionTarget] = None
+    target: Optional[ActionTarget] = None
+    text: Optional[str] = None
+    key: Optional[str] = None
+    keys: Optional[List[str]] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def is_special(self) -> bool:
+        return self.action in {ActionType.WAIT, ActionType.DONE, ActionType.FAIL}
+
+    @classmethod
+    def from_dict(cls, payload: Dict[str, Any]) -> "Action":
+        """Create an action from model JSON."""
+
+        if "action" not in payload:
+            raise ValueError("Action is missing the 'action' field")
+
+        action_type = ActionType(payload["action"].upper())
+        source = None
+        target = None
+        if "source" in payload and isinstance(payload["source"], dict):
+            s = payload["source"]
+            source = ActionTarget(
+                type=s.get("type", "coordinate"),
+                id=s.get("id"),
+                x=s.get("x"),
+                y=s.get("y"),
+            )
+
+        if "target" in payload and isinstance(payload["target"], dict):
+            t = payload["target"]
+            target = ActionTarget(
+                type=t.get("type", "coordinate"),
+                id=t.get("id"),
+                x=t.get("x"),
+                y=t.get("y"),
+            )
+
+        keys = payload.get("keys")
+        if isinstance(keys, str):
+            keys = [keys]
+
+        metadata = {
+            k: v
+            for k, v in payload.items()
+            if k not in {"action", "source", "target", "text", "key", "keys"}
+        }
+
+        return cls(
+            action=action_type,
+            source=source,
+            target=target,
+            text=payload.get("text"),
+            key=payload.get("key"),
+            keys=keys,
+            metadata=metadata,
+        )
 
 
-# Action type descriptions for the LLM prompt
-ACTION_DESCRIPTIONS = {
-    "CLICK": "Click at (x, y) coordinates or at target_text location",
-    "MOVE": "Move mouse cursor to (x, y) coordinates",
-    "SCROLL": "Scroll by amount (positive=down, negative=up)",
-    "TYPE": "Type the string specified in arg",
-    "KEY": "Press keyboard key(s) specified in arg (e.g., 'cmd+c', 'enter')",
-    "FOCUS_APP": "Bring application to focus (arg = app name)",
-    "OPEN": "Open file or URL (arg = path or URL)",
-    "EXECUTE": "Execute shell command (arg = command)",
-    "VERIFY_FILE": "Check if file exists (arg = file path)",
-    "WAIT": "Wait for amount seconds (amount = seconds)",
-}
+@dataclass
+class ActionBatch:
+    """Group of actions emitted in a single reasoning step."""
+
+    actions: List[Action]
+
+    def __iter__(self):
+        return iter(self.actions)
+
+    def __len__(self):
+        return len(self.actions)
+
+    @classmethod
+    def parse(cls, raw_actions: Sequence[Dict[str, Any]]) -> "ActionBatch":
+        actions = [Action.from_dict(item) for item in raw_actions]
+        return cls(actions)
 
 
-def get_action_schema_description() -> str:
-    """
-    Returns a formatted description of the action schema for LLM prompts.
-    """
-    lines = ["Available Actions:"]
-    for action_type, description in ACTION_DESCRIPTIONS.items():
-        lines.append(f"  - {action_type}: {description}")
-    
-    lines.append("\nAction Format:")
-    lines.append('{')
-    lines.append('  "actions": [')
-    lines.append('    {')
-    lines.append('      "action": "ACTION_TYPE",')
-    lines.append('      "x": 100,  // optional, for mouse actions')
-    lines.append('      "y": 200,  // optional, for mouse actions')
-    lines.append('      "target_text": "Button",  // optional, text to find and click')
-    lines.append('      "arg": "text or command",  // optional, depends on action')
-    lines.append('      "amount": 5  // optional, for scroll/wait')
-    lines.append('    }')
-    lines.append('  ]')
-    lines.append('}')
-    
-    return "\n".join(lines)
+def unpack_actions(action_block: Any) -> ActionBatch:
+    """Parse the user-provided JSON `actions` field into structured objects."""
 
+    if action_block in (None, ""):
+        return ActionBatch(actions=[])
 
-# Example actions for testing
-EXAMPLE_ACTIONS = ActionList(
-    actions=[
-        Action(action="CLICK", x=320, y=540),
-        Action(action="TYPE", arg="Hello World"),
-        Action(action="KEY", arg="enter"),
-    ]
-)
+    if isinstance(action_block, dict):
+        # Some models emit a single action as dict instead of list
+        action_block = [action_block]
 
+    if not isinstance(action_block, Iterable):
+        raise ValueError("actions must be a list of dicts")
+
+    parsed: List[Dict[str, Any]] = []
+    for item in action_block:
+        if not isinstance(item, dict):
+            raise ValueError("Each action entry must be a dict")
+        parsed.append(item)
+
+    return ActionBatch.parse(parsed)

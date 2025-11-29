@@ -1,0 +1,17 @@
+[
+  {
+    "id": "type_status",
+    "instruction": "Use the console input field (tag A1) to type \"Status: prepared\" and then finish the task with DONE.",
+    "expected_text": "Status: prepared"
+  },
+  {
+    "id": "type_ready",
+    "instruction": "Enter the phrase \"Automation ready\" into the text box labelled A1, then declare DONE once it is typed.",
+    "expected_text": "Automation ready"
+  },
+  {
+    "id": "type_id",
+    "instruction": "In the Console Input (A1), type \"Task ID: 42\" to acknowledge receipt, then wrap up with DONE.",
+    "expected_text": "Task ID: 42"
+  }
+]

@@ -1,3 +1,4 @@
+export HF_HOME=/workspace/code/test/inference
 export HF_HUB_ENABLE_HF_TRANSFER=0
 vllm serve Qwen/Qwen3-VL-8B-Instruct \
   --gpu-memory-utilization 0.90 \
