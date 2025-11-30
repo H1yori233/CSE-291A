@@ -35,10 +35,12 @@ class QwenVLClient(ModelClient):
         self,
         model: str = "Qwen/Qwen3-VL-8B-Instruct",
         base_url: str = "http://127.0.0.1:8000/v1/chat/completions",
+        api_key: str = "EMPTY",
         timeout: int = 120,
     ):
         self.model = model
         self.base_url = base_url
+        self.api_key = api_key
         self.timeout = timeout
 
     def generate(
@@ -55,9 +57,13 @@ class QwenVLClient(ModelClient):
             "temperature": temperature,
             "max_tokens": max_tokens,
         }
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+        }
         response = requests.post(
             self.base_url,
-            headers={"Content-Type": "application/json"},
+            headers=headers,
             json=payload,
             timeout=self.timeout,
         )
