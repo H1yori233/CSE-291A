@@ -11,7 +11,13 @@ from framework.prompts import templates
 
 @dataclass
 class PromptBuilder:
-    system_prompt: str = templates.SYSTEM_PROMPT
+    mode: str = "som"  # "som" or "coordinate"
+    
+    def __post_init__(self):
+        if self.mode == "coordinate":
+            self.system_prompt = templates.SYSTEM_PROMPT_COORDINATE_MODE
+        else:
+            self.system_prompt = templates.SYSTEM_PROMPT
 
     def system_message(self) -> Dict[str, str]:
         return {"role": "system", "content": self.system_prompt}

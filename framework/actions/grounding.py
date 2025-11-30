@@ -114,7 +114,12 @@ class GroundingResolver:
 
         target_type = (target.type or "mark").lower()
         if target_type == "coordinate":
-            return target.as_coordinate()
+            coord = target.as_coordinate()
+            if coord and observation.original_size:
+                # Scale coordinates from screenshot space to original screen space
+                scaled_x, scaled_y = observation.scale_coordinates(coord[0], coord[1])
+                return [scaled_x, scaled_y]
+            return coord
         if target_type == "mark" and target.id:
             return observation.lookup_mark(target.id)
         if target_type == "named_element" and target.id:
