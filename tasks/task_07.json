@@ -1,27 +1,35 @@
 {
-    "task_name": "Fix a Broken Symbolic Link",
-    "instruction": "In the '/home/user/project' directory, the symbolic link 'config.json' is broken. Remove it and recreate it to point to the correct target: '/opt/project/config.json'.",
-    "single-action": [
-        "`EXECUTE_TERMINAL` 'cd /home/user/project'",
-        "`EXECUTE_TERMINAL` 'ls -l'",
-        "`OBSERVE` output to identify 'config.json' as a broken link",
-        "`EXECUTE_TERMINAL` 'rm config.json'",
-        "`EXECUTE_TERMINAL` 'ln -s /opt/project/config.json config.json'",
-        "`EXECUTE_TERMINAL` 'ls -l config.json'",
-        "`VERIFY` that the link 'config.json' now points to '/opt/project/config.json'"
-    ],
-    "grouped-action": [
-        [
-            "`IDENTIFY_BROKEN_SYMLINK` 'config.json' in '/home/user/project'"
-        ],
-        [
-            "`REMOVE_FILE` 'config.json'"
-        ],
-        [
-            "`CREATE_SYMLINK` 'config.json' to '/opt/project/config.json'"
-        ],
-        [
-            "`VERIFY_SYMLINK` 'config.json'"
+  "id": "custom_task_07",
+  "snapshot": "os",
+  "instruction": "In '/home/user/project', the symlink 'config.json' is broken. Remove it and recreate it to point to '/opt/project/config.json'.",
+  "source": "custom",
+  "app": "Terminal",
+  "tags": ["cli", "filesystem"],
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "mkdir -p ~/project /opt/project && touch /opt/project/config.json && ln -s /tmp/nonexistent ~/project/config.json"
         ]
-    ]
+      }
+    }
+  ],
+  "evaluator": {
+    "func": "check_include_exclude",
+    "result": {
+      "type": "vm_command_line",
+      "command": "readlink /home/user/project/config.json",
+      "shell": true
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "include": ["/opt/project/config.json"],
+        "exclude": []
+      }
+    }
+  }
 }

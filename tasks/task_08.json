@@ -1,17 +1,35 @@
 {
-  "task_name": "Find the 5 Largest Files in Downloads, Save & View Results",
-  "instruction": "Recursively find files under /home/user/Downloads, sort by size, take top 5, format sizes, save to /home/user/Desktop/top5_downloads.txt, then display the results.",
-  "single-action": [
-    "`TYPE` 'find /home/user/Downloads -type f -printf \\\"%s\\t%p\\\\n\\\" | sort -nr | head -n 5 | numfmt --to=iec --suffix=B --field=1 > /home/user/Desktop/top5_downloads.txt\' and `ENTER`",
-    "`TYPE` 'column -t /home/user/Desktop/top5_downloads.txt || cat /home/user/Desktop/top5_downloads.txt' and `ENTER`",
+  "id": "custom_task_08",
+  "snapshot": "os",
+  "instruction": "Recursively find files under /home/user/Downloads, sort by size, and save the top 5 largest files to '/home/user/Desktop/top5_downloads.txt'.",
+  "source": "custom",
+  "app": "Terminal",
+  "tags": ["cli", "filesystem"],
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "mkdir -p ~/Downloads && for i in {1..6}; do dd if=/dev/zero of=~/Downloads/file_$i bs=1M count=$i; done"
+        ]
+      }
+    }
   ],
-  "grouped-action": [
-    [
-      "`COMPUTE_TOP_N_LARGEST_FILES` '/home/user/Downloads' N=5 → '/home/user/Desktop/top5_downloads.txt'"
-    ],
-    [
-      "`VIEW_FILE` '/home/user/Desktop/top5_downloads.txt'",
-      "`VERIFY` 5 lines, human-readable sizes"
-    ]
-  ]
+  "evaluator": {
+    "func": "check_include_exclude",
+    "result": {
+      "type": "vm_command_line",
+      "command": "ls /home/user/Desktop/top5_downloads.txt",
+      "shell": true
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "include": ["top5_downloads.txt"],
+        "exclude": ["No such file"]
+      }
+    }
+  }
 }

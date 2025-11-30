@@ -1,24 +1,43 @@
 {
-  "task_name": "Convert Markdown Notes to PDF and Merge with an Existing Report",
-  "instruction": "Open Typora to export notes.md in Documents as notes.pdf, then open PDF Arranger to merge it with report.pdf into Desktop/final_report.pdf.",
-  "related_apps": ["typora", "pdfarranger"],
-  "single-action": [
-    "`OPEN_APP` 'Typora'",
-    "`OPEN_FILE` '/home/user/Documents/notes.md'",
-    "`CLICK` 'File > Export > PDF'",
-    "`SAVE_FILE_AS` '/home/user/Documents/notes.pdf'",
-    "`CLOSE_APP` 'Typora'",
-    "`OPEN_APP` 'PDF Arranger'",
-    "`ADD_FILE` '/home/user/Documents/notes.pdf'",
-    "`ADD_FILE` '/home/user/Documents/report.pdf'",
-    "`CLICK` 'Save As…'",
-    "`TYPE` '/home/user/Desktop/final_report.pdf'",
-    "`CLICK` 'Save'",
-    "`CLOSE_APP` 'PDF Arranger'"
+  "id": "custom_task_01",
+  "snapshot": "os",
+  "instruction": "Open Typora to export 'notes.md' in Documents as 'notes.pdf', then open PDF Arranger to merge it with 'report.pdf' into 'Desktop/final_report.pdf'.",
+  "source": "custom",
+  "app": "PDF Apps",
+  "tags": ["gui", "file_manipulation"],
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "mkdir -p ~/Documents && echo '# Meeting Notes' > ~/Documents/notes.md && touch ~/Documents/report.pdf"
+        ]
+      }
+    }
   ],
-  "grouped-action": [
-    ["`EXPORT_MD_TO_PDF` 'notes.md' → 'notes.pdf'"],
-    ["`MERGE_PDFS` 'notes.pdf' + 'report.pdf' → 'final_report.pdf'"]
-  ]
-  
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 3.0
+        }
+      }
+    ],
+    "func": "check_include_exclude",
+    "result": {
+      "type": "vm_command_line",
+      "command": "ls /home/user/Desktop/final_report.pdf",
+      "shell": true
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "include": ["final_report.pdf"],
+        "exclude": ["No such file"]
+      }
+    }
+  }
 }
