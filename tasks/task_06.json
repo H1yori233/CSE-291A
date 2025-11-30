@@ -1,45 +1,43 @@
 {
-    "task_name": "Extract Image Text via GUI OCR and Save",
-    "instruction": "Launch gImageReader on Ubuntu, use the File → Open dialog (Ctrl+O) to add /home/ubuntu/note.png, run OCR to extract the text, then save/export the recognized text to /home/ubuntu/note_text.txt. Afterwards, open Gedit and inspect /home/ubuntu/note_text.txt to ensure the OCR text is present.",
-    "related_apps": ["gImageReader", "gedit"],
-    "single-action": [
-        "`OPEN_APP` 'gImageReader'",
-        "`WAIT` 2",
-        "`HOTKEY` 'Ctrl+O'",
-        "`TYPE` \"/home/ubuntu/note.png\"",
-        "`KEY` 'enter'",
-        "`WAIT` 2",
-        "`CLICK` 'Recognize'",
-        "`WAIT` 3",
-        "`CLICK` 'Save'",
-        "`TYPE` \"/home/ubuntu/note_text.txt\"",
-        "`KEY` 'enter'",
-        "`WAIT` 1",
-        "`OPEN_APP` 'Gedit'",
-        "`WAIT` 1",
-        "`HOTKEY` 'Ctrl+O'",
-        "`TYPE` \"/home/ubuntu/note_text.txt\"",
-        "`KEY` 'enter'",
-        "`WAIT` 1",
-        "`VERIFY_TEXT_PRESENT` (confirm OCR text visible)",
-        "`HOTKEY` 'Ctrl+S'",
-        "`CLOSE_APP` 'Gedit'"
-    ],
-    "grouped-action": [
-        [
-            "`OPEN_APP` 'gImageReader'",
-            "`HOTKEY` 'Ctrl+O'",
-            "`TYPE` \"/home/ubuntu/note.png\"",
-            "`KEY` 'enter'",
-            "`RUN_OCR`",
-            "`EXPORT_TEXT` \"/home/ubuntu/note_text.txt\""
-        ],
-        [
-            "`OPEN_APP` 'Gedit'",
-            "`OPEN_FILE` \"/home/ubuntu/note_text.txt\"",
-            "`VERIFY_CONTENT`",
-            "`SAVE_FILE`",
-            "`CLOSE_APP`"
+  "id": "custom_task_06",
+  "snapshot": "os",
+  "instruction": "Launch gImageReader, open '/home/user/note.png', run OCR to extract the text, and save the text to '/home/user/note_text.txt'.",
+  "source": "custom",
+  "app": "OCR Apps",
+  "tags": ["gui", "ocr"],
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "convert -size 300x100 xc:white -font DejaVu-Sans -pointsize 24 -fill black -draw \"text 10,50 'Secret Note'\" ~/note.png"
         ]
-    ]
+      }
+    }
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 2.0
+        }
+      }
+    ],
+    "func": "check_include_exclude",
+    "result": {
+      "type": "vm_command_line",
+      "command": "ls /home/user/note_text.txt",
+      "shell": true
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "include": ["note_text.txt"],
+        "exclude": ["No such file"]
+      }
+    }
+  }
 }

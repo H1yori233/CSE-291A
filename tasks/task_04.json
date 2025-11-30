@@ -1,30 +1,39 @@
 {
-    "task_name": "Resolve a Git Merge Conflict",
-    "instruction": "Open VS Code, navigate to the 'my-project' repository, open the 'src/main.js' file, resolve the merge conflict markers, save the file, and then commit the changes with the message 'Resolve merge conflict'.",
-    "single-action": [
-        "`OPEN_APP` 'VS Code'",
-        "`OPEN_FOLDER` '/home/user/my-project'",
-        "`OPEN_FILE` '/home/user/my-project/src/main.js'",
-        "`FIND_TEXT` '<<<<<<< HEAD'",
-        "`REPLACE_TEXT` '<<<<<<< HEAD\\nconsole.log(\"Feature A\");\\n=======\\nconsole.log(\"Feature B\");\\n>>>>>>> feature-branch' with 'console.log(\"Feature A & B\");'",
-        "`SAVE_FILE`",
-        "`CLICK` 'Source Control' icon",
-        "`CLICK` 'Commit' button",
-        "`TYPE` 'Resolve merge conflict' into commit message box",
-        "`CLICK` 'Commit' button (confirming the message)",
-        "`CLOSE_APP` 'VS Code'"
-    ],
-    "grouped-action": [
-        [
-            "`OPEN_VS_CODE_REPO` '/home/user/my-project'",
-            "`OPEN_FILE_IN_EDITOR` 'src/main.js'"
-        ],
-        [
-            "`RESOLVE_MERGE_CONFLICT` 'src/main.js' with 'console.log(\"Feature A & B\");'",
-            "`SAVE_FILE` 'src/main.js'"
-        ],
-        [
-            "`COMMIT_CHANGES` 'Resolve merge conflict'"
+  "id": "custom_task_04",
+  "snapshot": "vs_code",
+  "instruction": "Open VS Code, navigate to '/home/user/my-project', resolve the merge conflict in 'src/main.js', save, and commit with message 'Resolve merge conflict'.",
+  "source": "custom",
+  "app": "VS Code",
+  "tags": ["gui", "coding"],
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "mkdir -p ~/my-project/src && cd ~/my-project && git init && echo 'console.log(\"Base\");' > src/main.js && git add . && git commit -m 'init' && git checkout -b feature && echo 'console.log(\"Feature\");' > src/main.js && git commit -am 'feature' && git checkout master && echo 'console.log(\"Master\");' > src/main.js && git commit -am 'master' && git merge feature || true"
         ]
-    ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": ["code", "/home/user/my-project"]
+      }
+    }
+  ],
+  "evaluator": {
+    "func": "check_include_exclude",
+    "result": {
+      "type": "vm_file",
+      "path": "/home/user/my-project/src/main.js"
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "exclude": ["<<<<<<<", "=======", ">>>>>>>"]
+      }
+    }
+  }
 }
