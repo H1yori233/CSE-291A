@@ -138,6 +138,8 @@ class QwenOSWorldAgent:
             fenced = re.search(r"```(.*?)```", text, re.DOTALL)
         if fenced:
             text = fenced.group(1)
+        # Remove trailing commas in JSON arrays and objects which are common in LLM output
+        text = re.sub(r",\s*([\]}])", r"\1", text)
         try:
             data = json.loads(text)
         except json.JSONDecodeError as exc:
