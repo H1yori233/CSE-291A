@@ -200,6 +200,7 @@ def run_env_tasks(task_queue, args: argparse.Namespace, shared_scores: list):
             action_space=args.action_space,
             coordinate_type=args.coord,
             add_thought_prefix=args.add_thought_prefix,
+            api_backend="openai",
         )
         logger.info(f"Process {current_process().name} started.")
         while True:
