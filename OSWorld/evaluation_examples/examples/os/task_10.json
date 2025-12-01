@@ -1,0 +1,24 @@
+{
+  "id": "custom_task_10",
+  "snapshot": "os",
+  "instruction": "Schedule a Reminder in GNOME Calendar for a 'Team Sync Meeting' next Friday at 2 p.m. Then, take a screenshot of the calendar or notification and save it as '/home/user/Desktop/calendar_proof.png'.",
+  "source": "custom",
+  "app": "Calendar",
+  "tags": ["gui", "desktop"],
+  "config": [],
+  "evaluator": {
+    "func": "check_include_exclude",
+    "result": {
+      "type": "vm_command_line",
+      "command": "ls /home/user/Desktop/calendar_proof.png",
+      "shell": true
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "include": ["calendar_proof.png"],
+        "exclude": ["No such file"]
+      }
+    }
+  }
+}

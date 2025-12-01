@@ -1,0 +1,35 @@
+{
+  "id": "custom_task_07",
+  "snapshot": "os",
+  "instruction": "In '/home/user/project', the symlink 'config.json' is broken. Remove it and recreate it to point to '/opt/project/config.json'.",
+  "source": "custom",
+  "app": "Terminal",
+  "tags": ["cli", "filesystem"],
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "mkdir -p ~/project /opt/project && touch /opt/project/config.json && ln -s /tmp/nonexistent ~/project/config.json"
+        ]
+      }
+    }
+  ],
+  "evaluator": {
+    "func": "check_include_exclude",
+    "result": {
+      "type": "vm_command_line",
+      "command": "readlink /home/user/project/config.json",
+      "shell": true
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "include": ["/opt/project/config.json"],
+        "exclude": []
+      }
+    }
+  }
+}

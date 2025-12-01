@@ -1,0 +1,43 @@
+{
+  "id": "custom_task_06",
+  "snapshot": "os",
+  "instruction": "Launch gImageReader, open '/home/user/note.png', run OCR to extract the text, and save the text to '/home/user/note_text.txt'.",
+  "source": "custom",
+  "app": "OCR Apps",
+  "tags": ["gui", "ocr"],
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "convert -size 300x100 xc:white -font DejaVu-Sans -pointsize 24 -fill black -draw \"text 10,50 'Secret Note'\" ~/note.png"
+        ]
+      }
+    }
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 2.0
+        }
+      }
+    ],
+    "func": "check_include_exclude",
+    "result": {
+      "type": "vm_command_line",
+      "command": "ls /home/user/note_text.txt",
+      "shell": true
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "include": ["note_text.txt"],
+        "exclude": ["No such file"]
+      }
+    }
+  }
+}

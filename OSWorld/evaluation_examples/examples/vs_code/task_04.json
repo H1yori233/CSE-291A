@@ -1,0 +1,80 @@
+{
+  "id": "custom_task_04",
+  "snapshot": "vscode",
+  "instruction": "Open VS Code, navigate to the '/home/user/my-project' repository, open 'src/main.js', resolve the merge conflict markers to keep 'console.log(\"Feature A & B\");', save the file, and then commit the changes with the message 'Resolve merge conflict'.",
+  "source": "custom",
+  "app": "VS Code",
+  "tags": ["gui", "coding", "git"],
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "/bin/bash",
+          "-c",
+          "mkdir -p ~/my-project/src && cd ~/my-project && git init && echo 'console.log(\"Base\");' > src/main.js && git add . && git commit -m 'init' && git checkout -b feature && echo 'console.log(\"Feature\");' > src/main.js && git commit -am 'feature' && git checkout master && echo 'console.log(\"Master\");' > src/main.js && git commit -am 'master' && git merge feature || true"
+        ]
+      }
+    },
+    {
+      "type": "launch",
+      "parameters": {
+        "command": [
+          "code",
+          "/home/user/my-project"
+        ]
+      }
+    },
+    {
+      "type": "activate_window",
+      "parameters": {
+        "window_name": "Visual Studio Code"
+      }
+    }
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "activate_window",
+        "parameters": {
+          "window_name": "Visual Studio Code"
+        }
+      },
+      {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; pyautogui.hotkey('ctrl', 's');"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 1.0
+        }
+      }
+    ],
+    "func": "check_include_exclude",
+    "result": {
+      "type": "vm_command_line",
+      "command": "cat /home/user/my-project/src/main.js",
+      "shell": true
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "include": [
+          "console.log(\"Feature A & B\");"
+        ],
+        "exclude": [
+          "<<<<<<<",
+          "=======",
+          ">>>>>>>"
+        ]
+      }
+    }
+  }
+}
