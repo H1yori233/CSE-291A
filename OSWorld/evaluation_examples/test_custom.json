@@ -1,0 +1,18 @@
+{
+  "multi_apps": [
+    "task_01",
+    "task_02",
+    "task_05",
+    "task_06"
+  ],
+  "os": [
+    "task_03",
+    "task_07",
+    "task_08",
+    "task_09",
+    "task_10"
+  ],
+  "vs_code": [
+    "task_04"
+  ]
+}

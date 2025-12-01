@@ -1,0 +1,35 @@
+{
+  "id": "custom_task_08",
+  "snapshot": "os",
+  "instruction": "Recursively find files under /home/user/Downloads, sort by size, and save the top 5 largest files to '/home/user/Desktop/top5_downloads.txt'.",
+  "source": "custom",
+  "app": "Terminal",
+  "tags": ["cli", "filesystem"],
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "mkdir -p ~/Downloads && for i in {1..6}; do dd if=/dev/zero of=~/Downloads/file_$i bs=1M count=$i; done"
+        ]
+      }
+    }
+  ],
+  "evaluator": {
+    "func": "check_include_exclude",
+    "result": {
+      "type": "vm_command_line",
+      "command": "ls /home/user/Desktop/top5_downloads.txt",
+      "shell": true
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "include": ["top5_downloads.txt"],
+        "exclude": ["No such file"]
+      }
+    }
+  }
+}

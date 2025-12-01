@@ -1,0 +1,32 @@
+{
+  "id": "custom_task_05",
+  "snapshot": "os",
+  "instruction": "Use Firefox to download a logo image, crop and resize it in GIMP to 256x256, then insert it into a LibreOffice Impress slide and save the presentation as 'branding.odp' on the Desktop.",
+  "source": "custom",
+  "app": "GIMP & Impress",
+  "tags": ["gui", "web", "image_editing"],
+  "config": [],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 5.0
+        }
+      }
+    ],
+    "func": "check_include_exclude",
+    "result": {
+      "type": "vm_command_line",
+      "command": "ls /home/user/Desktop/branding.odp",
+      "shell": true
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "include": ["branding.odp"],
+        "exclude": ["No such file"]
+      }
+    }
+  }
+}
