@@ -1,0 +1,126 @@
+📜 Streaming output to: /workspace/CSE-291A/env_setup.log
+Ignoring user site-packages: PYTHONNOUSERSITE=1
+🗄  Triton / Torch-Inductor cache set to: /tmp/triton_cache_12260
+Setting INSTALL_WEBSHOP to 1 to install webshop-minimal
+Setting LOAD_WEBSHOP_DATASET to 1 to load webshop-minimal dataset
+Setting LOAD_BIRD_DATASET to 1 to load bird dataset
+Setting LOAD_DATASET to 1 to load all datasets
+💾 Setting PYTORCH_CUDA_ALLOC_CONF to expandable_segments:True for better memory management
+🚀 Setting up environment for LMGame training...
+🔍 Checking dependencies...
+🔧 Ensuring Python dependency: huggingface_hub...
+🔧 Ensuring Python dependency: wandb...
+✅ Dependencies checked
+🔧 Ensuring Python dependency: tqdm...
+🔧 Ensuring Python dependency: typing_extensions...
+📦 Logging into Hugging Face...
+Using HF_TOKEN from environment
+Token is valid (permission: fineGrained).
+The token `async_rl_token` has been saved to /workspace/.cache/huggingface/stored_tokens
+[1m[31mCannot authenticate through git-credential as no helper is defined on your machine.
+You might have to re-authenticate when pushing to the Hugging Face Hub.
+Run the following command in your terminal in case you want to set the 'store' credential helper as default.
+
+git config --global credential.helper store
+
+Read https://git-scm.com/book/en/v2/Git-Tools-Credential-Storage for more details.[0m
+Token has not been saved to git credential helper.
+Your token has been saved to /workspace/.cache/huggingface/token
+Login successful.
+Note: Environment variable`HF_TOKEN` is set and is the current active token independently from the token you've just configured.
+📊 Logging into Weights & Biases...
+⚠️  Using hardcoded API key - consider setting WANDB_API_KEY environment variable
+wandb: Appending key for api.wandb.ai to your netrc file: /root/.netrc
+wandb: W&B API key is configured. Use `wandb login --relogin` to force relogin
+🏢 Setting WANDB team/organization...
+Set WANDB_ENTITY to: yuxuan_zhang13-uc-san-diego
+✅ Environment setup complete!
+
+💡 For better security, consider setting environment variables:
+   export HF_TOKEN=your_hf_token
+   export WANDB_API_KEY=your_wandb_key
+   export WANDB_ENTITY=your_wandb_org_name
+]633;D;0]633;P;Cwd=/workspace/CSE-291A[?2004h]633;A(test_env) ]633;A]633;A]0;root@70658952cc0b: /workspace/CSE-291Aroot@70658952cc0b:/workspace/CSE-291A# ]633;B]633;B]633;Bbash launch_serving.sh 
+[?2004l]633;E;bash launch_serving.sh;e2f26c5d-8217-41f5-b7aa-a12168a4caad]633;CStarting vLLM server with model: qwen3-vl-8b-instruct on port 8000...
+[0;36m(APIServer pid=29384)[0;0m INFO 12-04 04:56:06 [api_server.py:1772] vLLM API server version 0.12.0
+[0;36m(APIServer pid=29384)[0;0m INFO 12-04 04:56:06 [utils.py:253] non-default args: {'host': '0.0.0.0', 'model': 'qwen3-vl-8b-instruct', 'trust_remote_code': True, 'max_model_len': 32768, 'served_model_name': ['qwen3-vl-8b-instruct']}
+[0;36m(APIServer pid=29384)[0;0m The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+[0;36m(APIServer pid=29384)[0;0m Traceback (most recent call last):
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 402, in hf_raise_for_status
+[0;36m(APIServer pid=29384)[0;0m     response.raise_for_status()
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/requests/models.py", line 1026, in raise_for_status
+[0;36m(APIServer pid=29384)[0;0m     raise HTTPError(http_error_msg, response=self)
+[0;36m(APIServer pid=29384)[0;0m requests.exceptions.HTTPError: 404 Client Error: Not Found for url: https://huggingface.co/qwen3-vl-8b-instruct/resolve/main/config.json
+[0;36m(APIServer pid=29384)[0;0m 
+[0;36m(APIServer pid=29384)[0;0m The above exception was the direct cause of the following exception:
+[0;36m(APIServer pid=29384)[0;0m 
+[0;36m(APIServer pid=29384)[0;0m Traceback (most recent call last):
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/transformers/utils/hub.py", line 479, in cached_files
+[0;36m(APIServer pid=29384)[0;0m     hf_hub_download(
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+[0;36m(APIServer pid=29384)[0;0m     return fn(*args, **kwargs)
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1007, in hf_hub_download
+[0;36m(APIServer pid=29384)[0;0m     return _hf_hub_download_to_cache_dir(
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1114, in _hf_hub_download_to_cache_dir
+[0;36m(APIServer pid=29384)[0;0m     _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1655, in _raise_on_head_call_error
+[0;36m(APIServer pid=29384)[0;0m     raise head_call_error
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1543, in _get_metadata_or_catch_error
+[0;36m(APIServer pid=29384)[0;0m     metadata = get_hf_file_metadata(
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+[0;36m(APIServer pid=29384)[0;0m     return fn(*args, **kwargs)
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1460, in get_hf_file_metadata
+[0;36m(APIServer pid=29384)[0;0m     r = _request_wrapper(
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 283, in _request_wrapper
+[0;36m(APIServer pid=29384)[0;0m     response = _request_wrapper(
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 307, in _request_wrapper
+[0;36m(APIServer pid=29384)[0;0m     hf_raise_for_status(response)
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 452, in hf_raise_for_status
+[0;36m(APIServer pid=29384)[0;0m     raise _format(RepositoryNotFoundError, message, response) from e
+[0;36m(APIServer pid=29384)[0;0m huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-69311466-6d1f0539269e2ab045b88919;768ce0fa-4ff0-4602-9090-883e5520fdcb)
+[0;36m(APIServer pid=29384)[0;0m 
+[0;36m(APIServer pid=29384)[0;0m Repository Not Found for url: https://huggingface.co/qwen3-vl-8b-instruct/resolve/main/config.json.
+[0;36m(APIServer pid=29384)[0;0m Please make sure you specified the correct `repo_id` and `repo_type`.
+[0;36m(APIServer pid=29384)[0;0m If you are trying to access a private or gated repo, make sure you are authenticated. For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+[0;36m(APIServer pid=29384)[0;0m 
+[0;36m(APIServer pid=29384)[0;0m The above exception was the direct cause of the following exception:
+[0;36m(APIServer pid=29384)[0;0m 
+[0;36m(APIServer pid=29384)[0;0m Traceback (most recent call last):
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+[0;36m(APIServer pid=29384)[0;0m     return _run_code(code, main_globals, None,
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/runpy.py", line 86, in _run_code
+[0;36m(APIServer pid=29384)[0;0m     exec(code, run_globals)
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/vllm/entrypoints/openai/api_server.py", line 1891, in <module>
+[0;36m(APIServer pid=29384)[0;0m     uvloop.run(run_server(args))
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/uvloop/__init__.py", line 69, in run
+[0;36m(APIServer pid=29384)[0;0m     return loop.run_until_complete(wrapper())
+[0;36m(APIServer pid=29384)[0;0m   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/uvloop/__init__.py", line 48, in wrapper
+[0;36m(APIServer pid=29384)[0;0m     return await main
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/vllm/entrypoints/openai/api_server.py", line 1819, in run_server
+[0;36m(APIServer pid=29384)[0;0m     await run_server_worker(listen_address, sock, args, **uvicorn_kwargs)
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/vllm/entrypoints/openai/api_server.py", line 1838, in run_server_worker
+[0;36m(APIServer pid=29384)[0;0m     async with build_async_engine_client(
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/contextlib.py", line 199, in __aenter__
+[0;36m(APIServer pid=29384)[0;0m     return await anext(self.gen)
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/vllm/entrypoints/openai/api_server.py", line 183, in build_async_engine_client
+[0;36m(APIServer pid=29384)[0;0m     async with build_async_engine_client_from_engine_args(
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/contextlib.py", line 199, in __aenter__
+[0;36m(APIServer pid=29384)[0;0m     return await anext(self.gen)
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/vllm/entrypoints/openai/api_server.py", line 209, in build_async_engine_client_from_engine_args
+[0;36m(APIServer pid=29384)[0;0m     vllm_config = engine_args.create_engine_config(usage_context=usage_context)
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/vllm/engine/arg_utils.py", line 1356, in create_engine_config
+[0;36m(APIServer pid=29384)[0;0m     maybe_override_with_speculators(
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/vllm/transformers_utils/config.py", line 477, in maybe_override_with_speculators
+[0;36m(APIServer pid=29384)[0;0m     config_dict, _ = PretrainedConfig.get_config_dict(
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/transformers/configuration_utils.py", line 662, in get_config_dict
+[0;36m(APIServer pid=29384)[0;0m     config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/transformers/configuration_utils.py", line 721, in _get_config_dict
+[0;36m(APIServer pid=29384)[0;0m     resolved_config_file = cached_file(
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/transformers/utils/hub.py", line 322, in cached_file
+[0;36m(APIServer pid=29384)[0;0m     file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+[0;36m(APIServer pid=29384)[0;0m   File "/workspace/miniconda3/envs/test_env/lib/python3.10/site-packages/transformers/utils/hub.py", line 511, in cached_files
+[0;36m(APIServer pid=29384)[0;0m     raise OSError(
+[0;36m(APIServer pid=29384)[0;0m OSError: qwen3-vl-8b-instruct is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+[0;36m(APIServer pid=29384)[0;0m If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+[W1204 04:56:08.165357536 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())

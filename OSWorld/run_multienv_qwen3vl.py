@@ -54,10 +54,12 @@ def config() -> argparse.Namespace:
     )
 
     # lm config
-    parser.add_argument("--model", type=str, default="qwen3-vl")
+    parser.add_argument("--model", type=str, default="Qwen/Qwen3-VL-8B-Instruct")
+    parser.add_argument("--api_backend", type=str, default="openai", choices=["openai", "dashscope", "local"], help="API backend")
+    parser.add_argument("--local_model_url", type=str, default="http://localhost:8000/v1", help="URL for local model serving")
     parser.add_argument("--temperature", type=float, default=0)
     parser.add_argument("--top_p", type=float, default=0.9)
-    parser.add_argument("--max_tokens", type=int, default=32768)
+    parser.add_argument("--max_tokens", type=int, default=4096)
     parser.add_argument("--stop_token", type=str, default=None)
     parser.add_argument(
         "--coord",
@@ -192,6 +194,10 @@ def run_env_tasks(task_queue, args: argparse.Namespace, shared_scores: list):
             client_password=args.client_password,
         )
         active_environments.append(env)
+        
+        if args.api_backend == "local" and args.local_model_url:
+            os.environ["LOCAL_LLM_URL"] = args.local_model_url
+
         agent = Qwen3VLAgent(
             model=args.model,
             max_tokens=args.max_tokens,
@@ -200,7 +206,7 @@ def run_env_tasks(task_queue, args: argparse.Namespace, shared_scores: list):
             action_space=args.action_space,
             coordinate_type=args.coord,
             add_thought_prefix=args.add_thought_prefix,
-            api_backend="openai",
+            api_backend=args.api_backend,
         )
         logger.info(f"Process {current_process().name} started.")
         while True:

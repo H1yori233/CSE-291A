@@ -89,7 +89,7 @@ class Qwen3VLAgent:
 
         assert action_space in ["pyautogui"], "Invalid action space"
         assert observation_type in ["screenshot"], "Invalid observation type"
-        assert api_backend in ["openai", "dashscope"], "Invalid API backend, must be 'openai' or 'dashscope'"
+        assert api_backend in ["openai", "dashscope", "local"], "Invalid API backend, must be 'openai', 'dashscope', or 'local'"
 
         self.thoughts = []
         self.actions = []
@@ -623,6 +623,8 @@ Previous actions:
             return self._call_llm_openai(messages, model)
         elif self.api_backend == "dashscope":
             return self._call_llm_dashscope(messages, model)
+        elif self.api_backend == "local":
+            return self._call_llm_local(messages, model)
         else:
             raise ValueError(f"Unknown API backend: {self.api_backend}")
 
@@ -706,6 +708,40 @@ Previous actions:
 
         if last_err:
             raise last_err
+        return ""
+
+    def _call_llm_local(self, messages, model):
+        """Call LLM using local serving backend (e.g. vLLM)."""
+        try:
+            from serving_backend.client import VLLMClient
+        except ImportError:
+            import sys
+            # Add parent directory to path to find serving_backend
+            sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+            from serving_backend.client import VLLMClient
+
+        base_url = os.environ.get("LOCAL_LLM_URL", "http://localhost:8000/v1")
+        # We can also support api_key if needed, usually 'EMPTY' for local vLLM
+        api_key = os.environ.get("LOCAL_LLM_API_KEY", "EMPTY")
+        
+        client = VLLMClient(base_url=base_url, api_key=api_key)
+        
+        for attempt in range(1, MAX_RETRY_TIMES + 1):
+            logger.info(f"[Local] Generating content with model: {model} (attempt {attempt}/{MAX_RETRY_TIMES})")
+            try:
+                return client.chat(
+                    model=model,
+                    messages=messages,
+                    max_tokens=self.max_tokens,
+                    temperature=self.temperature,
+                    top_p=self.top_p
+                )
+            except Exception as e:
+                logger.error(f"[Local] Error calling model: {e}")
+                if attempt < MAX_RETRY_TIMES:
+                    time.sleep(2)
+                    continue
+                break
         return ""
 
     def reset(self, _logger=None, **kwargs):
