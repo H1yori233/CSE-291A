@@ -59,7 +59,7 @@ def config() -> argparse.Namespace:
     parser.add_argument("--local_model_url", type=str, default="http://localhost:8000/v1", help="URL for local model serving")
     parser.add_argument("--temperature", type=float, default=0)
     parser.add_argument("--top_p", type=float, default=0.9)
-    parser.add_argument("--max_tokens", type=int, default=4096)
+    parser.add_argument("--max_tokens", type=int, default=2048)
     parser.add_argument("--stop_token", type=str, default=None)
     parser.add_argument(
         "--coord",
@@ -101,7 +101,7 @@ def config() -> argparse.Namespace:
         "--provider_name",
         type=str,
         default="docker",
-        choices=["aws", "virtualbox", "vmware", "docker", "azure", "aliyun"],
+        choices=["aws", "virtualbox", "vmware", "docker", "azure", "aliyun", "bare_metal"], # Added bare_metal
         help="Provider name",
     )
     parser.add_argument(
