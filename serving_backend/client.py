@@ -5,12 +5,15 @@ from openai import OpenAI
 logger = logging.getLogger("desktopenv.vllm_client")
 
 class VLLMClient:
-    def __init__(self, base_url="http://localhost:8000/v1", api_key="EMPTY"):
+    def __init__(self, base_url=None, api_key=None):
+        self.base_url = base_url or os.environ.get("OPENAI_BASE_URL", "http://localhost:8000/v1")
+        self.api_key = api_key or os.environ.get("OPENAI_API_KEY", "EMPTY")
+        
         self.client = OpenAI(
-            base_url=base_url,
-            api_key=api_key,
+            base_url=self.base_url,
+            api_key=self.api_key,
         )
-        logger.info(f"Initialized VLLMClient with base_url={base_url}")
+        logger.info(f"Initialized VLLMClient with base_url={self.base_url}")
 
     def chat(self, model, messages, max_tokens=32768, temperature=0.0, top_p=0.9, **kwargs):
         try:

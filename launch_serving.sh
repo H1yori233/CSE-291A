@@ -8,7 +8,7 @@ pkill -9 -f "python3 -m vllm"
 sleep 2
 
 # Configuration
-MODEL_NAME="Qwen/Qwen3-VL-8B-Instruct"
+MODEL_NAME="Qwen/Qwen3-VL-8B-Instruct-FP8"
 PORT=8000
 HOST="0.0.0.0"
 
@@ -28,11 +28,12 @@ python -m vllm.entrypoints.openai.api_server \
     --model "$MODEL_NAME" \
     --host "$HOST" \
     --port "$PORT" \
+    --api-key "EMPTY" \
     --trust-remote-code \
     --gpu-memory-utilization 0.95 \
     --max-model-len 3072 \
     --max-num-seqs 1 \
     --limit-mm-per-prompt '{"video": 1}' \
-    --dtype bfloat16 \
+    --dtype auto \
     --enforce-eager \
     --served-model-name "$MODEL_NAME"
