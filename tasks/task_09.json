@@ -1,22 +1,33 @@
 {
-  "id": "custom_task_10",
+  "id": "custom_task_09",
   "snapshot": "os",
-  "instruction": "Schedule a Reminder in GNOME Calendar for a 'Team Sync Meeting' next Friday at 2 p.m. Then, take a screenshot of the calendar or notification and save it as '/home/user/Desktop/calendar_proof.png'.",
+  "instruction": "In '/home/user/Downloads', check if 'testfile.txt' has SHA256 checksum 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9'. If it matches, move it to a new folder 'Verified'; otherwise move it to 'Corrupted'.",
   "source": "custom",
-  "app": "Calendar",
-  "tags": ["gui", "desktop"],
-  "config": [],
+  "app": "Terminal",
+  "tags": ["cli", "filesystem"],
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "bash",
+          "-c",
+          "mkdir -p ~/Downloads && echo -n 'hello world' > ~/Downloads/testfile.txt"
+        ]
+      }
+    }
+  ],
   "evaluator": {
     "func": "check_include_exclude",
     "result": {
       "type": "vm_command_line",
-      "command": "ls /home/user/Desktop/calendar_proof.png",
+      "command": "ls /home/user/Downloads/Verified/testfile.txt",
       "shell": true
     },
     "expected": {
       "type": "rule",
       "rules": {
-        "include": ["calendar_proof.png"],
+        "include": ["testfile.txt"],
         "exclude": ["No such file"]
       }
     }

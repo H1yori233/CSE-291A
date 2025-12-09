@@ -7,10 +7,18 @@
   "tags": ["gui", "desktop"],
   "config": [],
   "evaluator": {
-    "func": "check_file_exists",
+    "func": "check_include_exclude",
     "result": {
-      "type": "vm_file",
-      "path": "/home/user/Desktop/calendar_proof.png"
+      "type": "vm_command_line",
+      "command": "ls /home/user/Desktop/calendar_proof.png",
+      "shell": true
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "include": ["calendar_proof.png"],
+        "exclude": ["No such file"]
+      }
     }
   }
 }
