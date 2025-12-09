@@ -8,7 +8,7 @@ from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 from PIL import Image, UnidentifiedImageError
 
-from framework.actions import ActionType, GroundedAction
+from framework.actions import ActionType, GroundedAction, GroundingResolver
 from framework.core.agent import AgentConfig, QwenOSWorldAgent
 from framework.core.model_client import ModelClient, create_model_client
 from framework.core.observation import Observation
@@ -16,6 +16,17 @@ from framework.core.observation import Observation
 
 Coordinate = Optional[List[int]]
 ActionPayload = Union[str, Dict[str, object]]
+
+
+class SafeGroundingResolver(GroundingResolver):
+    """Grounder that degrades to WAIT when targets are missing."""
+
+    def resolve(self, action: GroundedAction, observation: "Observation") -> GroundedAction:  # type: ignore[override]
+        try:
+            return super().resolve(action, observation)  # type: ignore[arg-type]
+        except Exception as exc:
+            # Fallback to a WAIT to avoid hard failure in runner
+            return GroundedAction(action=ActionType.WAIT, metadata={"fallback": str(exc)})
 
 
 class FrameworkAgentAdapter:
@@ -33,7 +44,7 @@ class FrameworkAgentAdapter:
             model_client=model_client,
             config=agent_config,
             prompt_builder=None,
-            grounder=None,
+            grounder=SafeGroundingResolver(),
         )
         self._initialized = False
         self._instruction: str = ""
