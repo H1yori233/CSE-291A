@@ -62,6 +62,11 @@ class QwenOSWorldAgent:
         self._task_instruction = task_instruction
         self._step = 0
         self.memory = AgentMemory()
+        
+        # Clear model cache if available
+        if hasattr(self.model, 'reset_cache'):
+            self.model.reset_cache()
+            
         self._initial_plan_text = self._plan_task(task_instruction)
 
     def predict(self, observation: Observation) -> AgentStepOutput:
