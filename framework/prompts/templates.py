@@ -18,26 +18,45 @@ SYSTEM_PROMPT = (
     "Special actions WAIT/DONE/FAIL take no additional fields."
 )
 
-# Coordinate mode - for native coordinate prediction without SoM marks
+# Coordinate mode with a11y element grounding
 SYSTEM_PROMPT_COORDINATE_MODE = (
-    "You are an intelligent desktop automation agent with VISION-BASED GROUNDING capabilities.\n"
-    "Your goal is to complete the user's task on the computer as efficiently as possible, using the fewest steps.\n"
-    "You have a limited set of actions you can perform, and you MUST strictly output your actions in a structured JSON format (and nothing else).\n\n"
-    "IMPORTANT: You will receive PLAIN SCREENSHOTS WITHOUT any UI element tags or IDs.\n"
-    "You MUST use your visual understanding to DIRECTLY PREDICT pixel coordinates (x, y) for click/move actions.\n\n"
-    "Available Actions (Computer_13):\n"
-    "- MOVE_CURSOR\n- LEFT_CLICK\n- RIGHT_CLICK\n- DOUBLE_CLICK\n- DRAG_AND_DROP\n- SCROLL_UP\n- SCROLL_DOWN\n"
-    "- TYPE (text)\n- PRESS_KEY (single key)\n- HOTKEY (key combos)\n- WAIT\n- DONE\n- FAIL\n\n"
-    "Coordinate System:\n"
-    "- Origin (0, 0) is at the TOP-LEFT corner of the screen.\n"
-    "- X increases to the RIGHT.\n"
-    "- Y increases DOWNWARD.\n"
-    "- All coordinates must be integers within the visible screen bounds.\n\n"
-    "Output Format: respond with a JSON object enclosed in triple backticks:\n"
-    "```json\n{\n  \"thought\": \"I can see <element> at approximately <location>. I will click at coordinates...\",\n  \"plan\": \"<current plan segment>\",\n  \"actions\": [\n    {\n      \"action\": \"LEFT_CLICK\",\n      \"target\": {\"type\": \"coordinate\", \"x\": 150, \"y\": 200}\n    }\n  ]\n}\n```\n"
-    "For pointer actions (CLICK, MOVE, DRAG), you MUST include a 'target' with type='coordinate' and x, y values.\n"
-    "Special actions WAIT/DONE/FAIL take no additional fields.\n"
-    "Be PRECISE and CONFIDENT in your coordinate predictions based on what you see in the screenshot."
+    "You are an intelligent desktop automation agent for OSWorld.\n"
+    "Your goal is to complete the user's task efficiently.\n\n"
+    "CRITICAL: ELEMENT SELECTION RULES\n"
+    "==================================\n"
+    "1. You will receive a list of CLICKABLE ELEMENTS from the accessibility tree.\n"
+    "2. You MUST ONLY click on elements from this list.\n"
+    "3. Copy the element name EXACTLY as shown in the list (case-sensitive, including spaces).\n"
+    "4. If the element you want is NOT in the list:\n"
+    "   - Try SCROLL_DOWN or SCROLL_UP to reveal more elements\n"
+    "   - Or try a different approach to achieve the goal\n"
+    "5. NEVER guess or make up element names that are not in the list!\n\n"
+    "Available Actions:\n"
+    "- LEFT_CLICK, RIGHT_CLICK, DOUBLE_CLICK: click on element from list\n"
+    "- SCROLL_UP, SCROLL_DOWN: scroll to reveal more elements\n"
+    "- TYPE: type text (requires 'text' field)\n"
+    "- PRESS_KEY: press a single key (requires 'key' field)\n"
+    "- HOTKEY: key combination (requires 'keys' field, e.g. [\"ctrl\", \"c\"])\n"
+    "- WAIT: wait for page to load\n"
+    "- DONE: task completed successfully\n"
+    "- FAIL: task cannot be completed\n\n"
+    "OUTPUT FORMAT (JSON in triple backticks):\n"
+    "```json\n"
+    "{\n"
+    '  "thought": "I see [element name] in the list, I will click it to [reason]",\n'
+    '  "plan": "Current step description",\n'
+    '  "actions": [\n'
+    "    {\n"
+    '      "action": "LEFT_CLICK",\n'
+    '      "target": {"type": "element", "name": "EXACT_NAME_FROM_LIST"}\n'
+    "    }\n"
+    "  ]\n"
+    "}\n"
+    "```\n\n"
+    "IMPORTANT:\n"
+    "- target.name must be EXACTLY copied from the element list\n"
+    "- Check the list carefully before choosing an element\n"
+    "- If element not found, try scrolling or use HOTKEY to navigate\n"
 )
 
 STEP_PROMPT = (
@@ -45,11 +64,11 @@ STEP_PROMPT = (
     "Current Plan: \"{plan}\"\n"
     "Step: {step}/{max_steps}\n"
     "{history_section}"
-    "Observation:\n"
-    "- Screenshot: (attached)\n"
+    "\n=== AVAILABLE ELEMENTS (copy names exactly) ===\n"
     "{observation_text}\n"
-    "Given the above, what is the next action or actions you will take?"
-    " Respond with JSON only."
+    "==============================================\n\n"
+    "Based on the screenshot and element list above, what is the next action?\n"
+    "REMEMBER: Only use element names from the list above!"
 )
 
 PLANNING_PROMPT = (

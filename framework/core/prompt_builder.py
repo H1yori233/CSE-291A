@@ -73,16 +73,23 @@ class PromptBuilder:
 
     def _format_observation(self, observation: Observation) -> str:
         parts: List[str] = []
-        if observation.som_elements:
+        
+        # If we have parsed a11y elements, use them (preferred for element-based grounding)
+        if observation.a11y_elements:
+            parts.append(observation.format_a11y_elements(max_elements=40))
+        elif observation.som_elements:
+            # Fallback to SoM elements
             visible = [
                 f"{el.get('id')}: {el.get('name', '')}".strip()
                 for el in observation.som_elements[:12]
             ]
             if visible:
                 parts.append("Visible UI elements: " + ", ".join(visible))
-        if observation.a11y_tree:
+        elif observation.a11y_tree:
+            # Raw a11y tree as last resort
             snippet = observation.a11y_tree.strip()
-            if len(snippet) > 400:
-                snippet = snippet[:400] + "..."
-            parts.append("Accessibility summary: " + snippet)
+            if len(snippet) > 2000:
+                snippet = snippet[:2000] + "...(truncated)"
+            parts.append("Accessibility Tree:\n" + snippet)
+        
         return "\n".join(parts)

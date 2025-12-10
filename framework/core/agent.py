@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
+
+logger = logging.getLogger("framework.agent")
 
 from framework.actions import (
     ActionBatch,
@@ -90,12 +93,39 @@ class QwenOSWorldAgent:
             max_tokens=self.config.max_tokens,
             image=observation.screenshot,
         )
-        payload = self._parse_response(raw)
+        
+        # DEBUG: Log raw model response
+        logger.info("[DEBUG] Raw model response:\n%s", raw[:2000] if len(raw) > 2000 else raw)
+        
+        try:
+            payload = self._parse_response(raw)
+            logger.info("[DEBUG] Parsed payload: %s", json.dumps(payload, indent=2, ensure_ascii=False)[:1000])
+        except Exception as e:
+            logger.error("[DEBUG] Failed to parse response: %s", e)
+            # Return a WAIT action on parse failure
+            from framework.actions import ActionType
+            return AgentStepOutput(
+                raw_response=raw,
+                payload={"thought": "parse_error", "plan": "", "actions": []},
+                actions=ActionBatch(actions=[]),
+                grounded_actions=[GroundedAction(action=ActionType.WAIT, metadata={"error": str(e)})],
+            )
+        
         plan_update = payload.get("plan")
         if isinstance(plan_update, str) and plan_update.strip():
             self.plan.update_from_text(plan_update)
+        
         actions = unpack_actions(payload.get("actions"))
+        logger.info("[DEBUG] Unpacked actions count: %d", len(actions))
+        for i, act in enumerate(actions):
+            logger.info("[DEBUG] Action[%d]: %s", i, act)
+        
         grounded = [self.grounder.resolve(action, observation) for action in actions]
+        logger.info("[DEBUG] Grounded actions count: %d", len(grounded))
+        for i, ga in enumerate(grounded):
+            logger.info("[DEBUG] GroundedAction[%d]: action=%s, coord=%s, text=%s", 
+                       i, ga.action, ga.coordinate, ga.text)
+        
         self.memory.note_actions(self._step, grounded)
         return AgentStepOutput(
             raw_response=raw,

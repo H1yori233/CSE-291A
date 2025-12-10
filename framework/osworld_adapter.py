@@ -21,11 +21,18 @@ ActionPayload = Union[str, Dict[str, object]]
 class SafeGroundingResolver(GroundingResolver):
     """Grounder that degrades to WAIT when targets are missing."""
 
+    def __init__(self):
+        super().__init__()
+        self.logger = logging.getLogger("framework.adapter")
+
     def resolve(self, action: GroundedAction, observation: "Observation") -> GroundedAction:  # type: ignore[override]
         try:
-            return super().resolve(action, observation)  # type: ignore[arg-type]
+            result = super().resolve(action, observation)  # type: ignore[arg-type]
+            self.logger.info("[DEBUG] SafeGroundingResolver: action=%s resolved successfully", action.action)
+            return result
         except Exception as exc:
             # Fallback to a WAIT to avoid hard failure in runner
+            self.logger.warning("[DEBUG] SafeGroundingResolver: FALLBACK to WAIT due to: %s (action was: %s)", exc, action)
             return GroundedAction(action=ActionType.WAIT, metadata={"fallback": str(exc)})
 
 
@@ -40,10 +47,14 @@ class FrameworkAgentAdapter:
         logger: Optional[logging.Logger] = None,
     ):
         self.logger = logger or logging.getLogger("framework.adapter")
+        
+        # Import PromptBuilder here to avoid circular import
+        from framework.core.prompt_builder import PromptBuilder
+        
         self.agent = QwenOSWorldAgent(
             model_client=model_client,
             config=agent_config,
-            prompt_builder=None,
+            prompt_builder=PromptBuilder(mode=prompt_mode),
             grounder=SafeGroundingResolver(),
         )
         self._initialized = False
@@ -83,25 +94,41 @@ class FrameworkAgentAdapter:
                 image = None
                 original_size = None
 
-        return Observation(
+        a11y_tree_raw = obs.get("accessibility_tree")
+        
+        observation = Observation(
             screenshot=image,
-            a11y_tree=obs.get("accessibility_tree"),
+            a11y_tree=a11y_tree_raw,
             som_elements=[],
             marks={},
             original_size=original_size,
         )
+        
+        # Debug: log parsed a11y elements
+        self.logger.info("[DEBUG] a11y_tree raw length: %d", len(a11y_tree_raw) if a11y_tree_raw else 0)
+        self.logger.info("[DEBUG] Parsed a11y_elements count: %d", len(observation.a11y_elements))
+        # Print all elements for debugging
+        for elem in observation.a11y_elements:
+            self.logger.info("[DEBUG] A11y Element: %s", elem)
+        
+        return observation
 
     def _grounded_to_osworld(self, grounded_actions: Sequence[GroundedAction]) -> List[ActionPayload]:
+        self.logger.info("[DEBUG] _grounded_to_osworld: received %d grounded actions", len(grounded_actions))
         translated: List[ActionPayload] = []
-        for action in grounded_actions:
+        for i, action in enumerate(grounded_actions):
             mapped = self._translate_action(action)
+            self.logger.info("[DEBUG] _grounded_to_osworld: action[%d] %s -> mapped=%s", i, action.action, mapped)
             if isinstance(mapped, list):
                 translated.extend(mapped)
             elif mapped:
                 translated.append(mapped)
 
         if not translated:
+            self.logger.warning("[DEBUG] _grounded_to_osworld: no actions translated, defaulting to WAIT")
             translated.append("WAIT")
+        
+        self.logger.info("[DEBUG] _grounded_to_osworld: final translated actions: %s", translated)
         return translated
 
     def _translate_action(self, action: GroundedAction) -> Union[ActionPayload, List[ActionPayload], None]:

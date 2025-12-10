@@ -29,13 +29,17 @@ class ActionType(str, Enum):
 class ActionTarget:
     """Target for pointer actions.
 
-    type may be "mark" (Set-of-Mark id) or "coordinate" (absolute pixels).
+    type may be:
+    - "mark": Set-of-Mark id
+    - "coordinate": absolute pixels (x, y)
+    - "element": accessibility tree element name
     """
 
     type: str
     id: Optional[str] = None
     x: Optional[int] = None
     y: Optional[int] = None
+    name: Optional[str] = None  # For element-based targeting
 
     def as_coordinate(self) -> Optional[List[int]]:
         """Return a `[x, y]` list if enough info is available."""
@@ -43,6 +47,10 @@ class ActionTarget:
         if self.type == "coordinate" and self.x is not None and self.y is not None:
             return [int(self.x), int(self.y)]
         return None
+    
+    def is_element(self) -> bool:
+        """Check if this is an element-based target."""
+        return self.type == "element" and self.name is not None
 
 
 @dataclass
@@ -79,14 +87,22 @@ class Action:
                 y=s.get("y"),
             )
 
-        if "target" in payload and isinstance(payload["target"], dict):
+        if "target" in payload:
             t = payload["target"]
-            target = ActionTarget(
-                type=t.get("type", "coordinate"),
-                id=t.get("id"),
-                x=t.get("x"),
-                y=t.get("y"),
-            )
+            if isinstance(t, dict):
+                target = ActionTarget(
+                    type=t.get("type", "coordinate"),
+                    id=t.get("id"),
+                    x=t.get("x"),
+                    y=t.get("y"),
+                    name=t.get("name"),  # For element-based targeting
+                )
+            elif isinstance(t, str):
+                # Model output a string target - treat as element name
+                target = ActionTarget(
+                    type="element",
+                    name=t,
+                )
 
         keys = payload.get("keys")
         if isinstance(keys, str):

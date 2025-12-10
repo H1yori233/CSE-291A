@@ -113,6 +113,8 @@ class GroundingResolver:
             return None
 
         target_type = (target.type or "mark").lower()
+        
+        # Handle coordinate type
         if target_type == "coordinate":
             coord = target.as_coordinate()
             if coord and observation.original_size:
@@ -120,8 +122,37 @@ class GroundingResolver:
                 scaled_x, scaled_y = observation.scale_coordinates(coord[0], coord[1])
                 return [scaled_x, scaled_y]
             return coord
+        
+        # Handle element type - lookup by name in a11y tree
+        if target_type == "element" and target.name:
+            import logging
+            logger = logging.getLogger("framework.grounding")
+            logger.info("[DEBUG] Looking for element: '%s' in %d a11y_elements", 
+                       target.name, len(observation.a11y_elements))
+            
+            coords = observation.lookup_a11y_element_by_name(target.name, fuzzy=True)
+            if coords:
+                logger.info("[DEBUG] Found element '%s' at coords: %s", target.name, coords)
+                return coords
+            
+            # Fallback: try som_elements
+            coords = observation.lookup_named_element(target.name)
+            if coords:
+                logger.info("[DEBUG] Found element '%s' in som_elements at: %s", target.name, coords)
+                return coords
+            
+            # Log available element names for debugging
+            available_names = [e.name for e in observation.a11y_elements[:20] if e.name]
+            logger.warning("[DEBUG] Element '%s' NOT FOUND. Available names: %s", 
+                          target.name, available_names)
+            return None
+        
+        # Handle mark type (SoM IDs)
         if target_type == "mark" and target.id:
             return observation.lookup_mark(target.id)
+        
+        # Handle legacy named_element type
         if target_type == "named_element" and target.id:
             return observation.lookup_named_element(target.id)
+        
         return None
