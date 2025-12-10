@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional
 
 from framework.core.observation import Observation
+from framework.core.memory import AgentMemory
 from framework.prompts import templates
 
 
@@ -39,15 +40,26 @@ class PromptBuilder:
         max_steps: int,
         history: str,
         observation: Observation,
+        memory: Optional[AgentMemory] = None,
     ) -> List[Dict[str, str]]:
         observation_text = self._format_observation(observation)
-        history_section = f"Recent Actions: {history}\n" if history else ""
+        
+        # Use detailed history if memory is provided, otherwise use simple history string
+        if memory:
+            history_section = memory.recent_actions_detailed(n=5)
+            loop_warning = memory.detect_loop(window=3)
+            loop_warning_text = f"\n⚠️ {loop_warning}\n" if loop_warning else ""
+        else:
+            history_section = history if history else "No previous actions yet."
+            loop_warning_text = ""
+        
         user_prompt = templates.STEP_PROMPT.format(
             instruction=instruction,
             plan=plan_text,
             step=step,
             max_steps=max_steps,
             history_section=history_section,
+            loop_warning=loop_warning_text,
             observation_text=observation_text,
         )
         return [self.system_message(), {"role": "user", "content": user_prompt}]

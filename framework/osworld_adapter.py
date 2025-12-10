@@ -187,6 +187,7 @@ class FrameworkAgentAdapter:
             key = action.key or (action.keys[0] if action.keys else None)
             if not key:
                 return None
+            key = self._normalize_key(key)
             return {
                 "action_type": "PRESS",
                 "parameters": {"key": key},
@@ -196,12 +197,44 @@ class FrameworkAgentAdapter:
             keys = action.keys or ([action.key] if action.key else None)
             if not keys:
                 return None
+            keys = [self._normalize_key(k) for k in keys]
             return {
                 "action_type": "HOTKEY",
                 "parameters": {"keys": keys},
             }
 
         return None
+
+    # Map of human-readable key names to pyautogui-compatible keys
+    _KEY_NAME_MAP = {
+        "comma": ",",
+        "period": ".",
+        "dot": ".",
+        "slash": "/",
+        "backslash": "\\",
+        "semicolon": ";",
+        "colon": ":",
+        "quote": "'",
+        "doublequote": "\"",
+        "bracket_left": "[",
+        "bracket_right": "]",
+        "brace_left": "{",
+        "brace_right": "}",
+        "paren_left": "(",
+        "paren_right": ")",
+        "minus": "-",
+        "plus": "+",
+        "equals": "=",
+        "underscore": "_",
+        "space": " ",
+        "return": "enter",
+        "control": "ctrl",
+    }
+
+    def _normalize_key(self, key: str) -> str:
+        """Normalize key names to pyautogui-compatible format."""
+        key_lower = key.lower().strip()
+        return self._KEY_NAME_MAP.get(key_lower, key_lower)
 
     def _coord(self, coordinate: Coordinate) -> Optional[Dict[str, int]]:
         if not coordinate:

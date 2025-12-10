@@ -86,6 +86,7 @@ class QwenOSWorldAgent:
             max_steps=self.config.max_steps,
             history=history,
             observation=observation,
+            memory=self.memory,  # Pass memory for detailed history & loop detection
         )
         raw = self.model.generate(
             messages,

@@ -104,7 +104,11 @@ class Action:
                     name=t,
                 )
 
+        # Extract keys - try root level first, then fallback to target.keys
         keys = payload.get("keys")
+        if keys is None and "target" in payload and isinstance(payload["target"], dict):
+            # Model may have nested keys in target (e.g. {"target": {"type": "hotkey", "keys": [...]}})
+            keys = payload["target"].get("keys")
         if isinstance(keys, str):
             keys = [keys]
 

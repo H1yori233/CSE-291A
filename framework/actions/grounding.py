@@ -84,10 +84,14 @@ class GroundingResolver:
             coordinate = self._resolve_target(action.target, observation)
             if not coordinate:
                 raise ValueError(f"{action.action.value} requires a resolvable target")
+            # Store element name in metadata for better history tracking
+            metadata = dict(action.metadata) if action.metadata else {}
+            if action.target and action.target.name:
+                metadata["element_name"] = action.target.name
             return GroundedAction(
                 action=action.action,
                 coordinate=coordinate,
-                metadata=action.metadata,
+                metadata=metadata,
             )
 
         if action.action in _SCROLL_ACTIONS:
