@@ -1,0 +1,6 @@
+{"run_name": "Baseline_0_Throughput", "type": "Cold", "ttft_ms": 13276.19, "tpot_ms": 21.32, "total_time_ms": 15984.0, "tokens_per_sec": 8.01, "total_tokens": 128}
+{"run_name": "Baseline_0_Throughput", "type": "Warm", "ttft_ms": 493.7, "tpot_ms": 20.4, "total_time_ms": 3084.13, "tokens_per_sec": 41.5, "total_tokens": 128}
+{"run_name": "Baseline_1_Batch1_Eager", "type": "Cold", "ttft_ms": 14493.81, "tpot_ms": 22.4, "total_time_ms": 17338.21, "tokens_per_sec": 7.38, "total_tokens": 128}
+{"run_name": "Baseline_1_Batch1_Eager", "type": "Warm", "ttft_ms": 437.07, "tpot_ms": 21.67, "total_time_ms": 3189.01, "tokens_per_sec": 40.14, "total_tokens": 128}
+{"run_name": "Baseline_2_Optimized", "type": "Cold", "ttft_ms": 13985.74, "tpot_ms": 19.67, "total_time_ms": 16483.86, "tokens_per_sec": 7.77, "total_tokens": 128}
+{"run_name": "Baseline_2_Optimized", "type": "Warm", "ttft_ms": 464.07, "tpot_ms": 20.6, "total_time_ms": 3079.66, "tokens_per_sec": 41.56, "total_tokens": 128}
