@@ -51,7 +51,7 @@ class DomainRAG:
     }
     
     def __init__(self):
-        self.knowledge_base: Dict[str, List[KnowledgeItem]] = {} = {}
+        self.knowledge_base: Dict[str, List[KnowledgeItem]] = {}
         self.all_items: List[KnowledgeItem] = []
         logger.info("DomainRAG initialized (keyword matching mode)")
     

@@ -14,9 +14,9 @@
                     "1. Open VLC Media Player.",
                     "2. Go to Tools → Preferences (or press Ctrl+P).",
                     "3. IMPORTANT: Click the 'All' radio button at the bottom left to show all settings.",
-                    "4. In the left panel tree: click on 'Interface' to expand it.",
-                    "5. Click on 'Main interfaces' to expand it.",
-                    "6. Click on 'Qt' under Main interfaces.",
+                    "4. CRITICAL: In the left panel tree, use DOUBLE_CLICK on 'Interface' to expand it (single click only selects).",
+                    "5. Use DOUBLE_CLICK on 'Main interfaces' to expand it.",
+                    "6. LEFT_CLICK on 'Qt' under Main interfaces to select it.",
                     "7. In the right panel, uncheck 'Display background cone or art'.",
                     "8. Click Save and restart VLC."
                 ],
@@ -1609,6 +1609,61 @@
                     "event",
                     "meeting",
                     "notification"
+                ]
+            }
+        }
+    },
+    "terminal": {
+        "name": "GNOME Terminal",
+        "general_tips": [
+            "Use Ctrl+Alt+T to open a new terminal window.",
+            "Terminal preferences are accessed via the hamburger menu (☰) → Preferences.",
+            "Profile settings control default terminal size, colors, and fonts.",
+            "In preferences dialogs, numeric fields are spin-button elements showing their current value (e.g., '80', '24')."
+        ],
+        "specific_knowledge": {
+            "set terminal size": {
+                "steps": [
+                    "1. Open Terminal using HOTKEY [ctrl, alt, t].",
+                    "2. Click the hamburger Menu button (☰) in the title bar.",
+                    "3. Click 'Preferences' in the dropdown menu.",
+                    "4. Click on the profile name (e.g., 'Unnamed') in the sidebar.",
+                    "5. The 'Text' tab shows 'Initial terminal size' with columns and rows.",
+                    "6. IMPORTANT: To edit the size, click on the spin-button showing the current value (e.g., click on '80' to change columns).",
+                    "7. Use TRIPLE_CLICK or Ctrl+A to select all text, then TYPE the new value.",
+                    "8. Similarly edit the rows field by clicking on '24' and typing the new value.",
+                    "9. Close the preferences window - changes are saved automatically."
+                ],
+                "keywords": [
+                    "terminal",
+                    "size",
+                    "columns",
+                    "rows",
+                    "default",
+                    "permanent",
+                    "width",
+                    "height"
+                ],
+                "element_hints": {
+                    "columns_field": "Look for spin-button element with value '80'",
+                    "rows_field": "Look for spin-button element with value '24'"
+                }
+            },
+            "change terminal colors": {
+                "steps": [
+                    "1. Open Terminal preferences via Menu → Preferences.",
+                    "2. Select your profile in the sidebar.",
+                    "3. Click the 'Colors' tab.",
+                    "4. Uncheck 'Use colors from system theme' to customize.",
+                    "5. Choose a built-in scheme or set custom colors.",
+                    "6. Close the dialog to save changes."
+                ],
+                "keywords": [
+                    "terminal",
+                    "color",
+                    "theme",
+                    "background",
+                    "foreground"
                 ]
             }
         }

@@ -119,36 +119,77 @@ class Observation:
         logger = logging.getLogger("framework.observation")
         
         needle = name.lower().strip()
+        original_name = name  # Keep original for context hints
         
         # Try to extract quoted string if model included extra formatting
         quoted_match = re.search(r'"([^"]+)"', name)
         if quoted_match:
             needle = quoted_match.group(1).lower().strip()
         
-        # Find ALL matching elements first
-        matches = []
+        # Extract type hint if present (e.g., "Close (push-button)" -> type_hint = "push-button")
+        type_hint = None
+        type_match = re.search(r'\(([^)]+)\)', original_name)
+        if type_match:
+            type_hint = type_match.group(1).lower().strip()
+            # Remove type hint from needle for cleaner matching
+            needle_without_type = re.sub(r'\s*\([^)]+\)\s*(@.*)?$', '', needle).strip()
+            if needle_without_type:
+                needle = needle_without_type
         
-        # Exact match
+        # Extract coordinate hint if present (e.g., "@ (1771, 79)")
+        coord_hint = None
+        coord_match = re.search(r'@\s*\((\d+),\s*(\d+)\)', original_name)
+        if coord_match:
+            coord_hint = (int(coord_match.group(1)), int(coord_match.group(2)))
+        
+        # Find ALL matching elements first
+        exact_matches = []
+        fuzzy_matches = []
+        
+        # Multi-pass matching with scoring
         for elem in self.a11y_elements:
             elem_name = (elem.name or "").lower().strip()
             elem_text = (elem.text or "").lower().strip()
+            
+            # Exact match - highest priority
             if elem_name == needle or elem_text == needle:
-                matches.append(elem)
-        
-        # Fuzzy match if no exact match
-        if not matches and fuzzy:
-            for elem in self.a11y_elements:
-                elem_name = (elem.name or "").lower()
-                elem_text = (elem.text or "").lower()
+                exact_matches.append(elem)
+            # Fuzzy match - only if no exact match found
+            elif fuzzy:
+                # needle is substring of element name (e.g., "close" in "close window")
                 if needle in elem_name or needle in elem_text:
-                    matches.append(elem)
-                elif elem_name and elem_name in needle:
-                    matches.append(elem)
-                elif elem_text and elem_text in needle:
-                    matches.append(elem)
+                    fuzzy_matches.append(elem)
+                # element name is substring of needle - REQUIRE minimum length to avoid false matches
+                # e.g., prevent "terminal" matching "initial terminal size - width field"  
+                elif elem_name and len(elem_name) >= 5 and elem_name in needle:
+                    # Only match if element name is a significant portion of the query
+                    if len(elem_name) >= len(needle) * 0.4:  # At least 40% of query length
+                        fuzzy_matches.append(elem)
+        
+        # Use exact matches first, fallback to fuzzy
+        matches = exact_matches if exact_matches else fuzzy_matches
         
         if not matches:
             return None
+        
+        # If we have coordinate hint, find the element closest to that coordinate
+        if coord_hint and len(matches) > 1:
+            def distance_to_hint(elem):
+                center = elem.center()
+                if not center:
+                    return float('inf')
+                return abs(center[0] - coord_hint[0]) + abs(center[1] - coord_hint[1])
+            matches.sort(key=distance_to_hint)
+            if distance_to_hint(matches[0]) < 50:  # Must be close to hint
+                logger.info("[DEBUG] Selected '%s' at %s (closest to hint %s)", 
+                           matches[0].name, matches[0].center(), coord_hint)
+                return matches[0].center()
+        
+        # If we have type hint, filter by element type
+        if type_hint and len(matches) > 1:
+            typed_matches = [m for m in matches if type_hint in m.tag.lower()]
+            if typed_matches:
+                matches = typed_matches
         
         # Smart container handling: prioritize interactive elements over containers
         interactive_matches = [m for m in matches if m.tag.lower() not in self.NON_INTERACTIVE_TAGS]
@@ -156,6 +197,13 @@ class Observation:
         
         # If we have interactive matches, use the first one
         if interactive_matches:
+            # If multiple interactive matches with same name, prefer push-button, check-box, spin-button
+            if len(interactive_matches) > 1:
+                PREFERRED_TYPES = ['push-button', 'check-box', 'spin-button', 'combo-box', 'text', 'menu-item']
+                for ptype in PREFERRED_TYPES:
+                    for m in interactive_matches:
+                        if m.tag.lower() == ptype:
+                            return m.center()
             return interactive_matches[0].center()
         
         # If we only have container matches, look for nearby interactive children

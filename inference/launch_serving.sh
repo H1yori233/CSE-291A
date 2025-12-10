@@ -1,3 +1,5 @@
+# apt-get update && apt-get install bc
+
 echo "Cleaning up old processes..."
 pkill -9 -f "vllm"
 pkill -9 -f "python3 -m vllm"
@@ -16,20 +18,10 @@ export CUDA_VISIBLE_DEVICES=0
 TARGET_VRAM_GB=24
 GPU_TOTAL_MB=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits | head -n1)
 if [ -z "$GPU_TOTAL_MB" ]; then echo "No GPU detected"; exit 1; fi
-GPU_TOTAL_GB=$(python - <<'PY'
-import os
-mb=float(os.environ["GPU_TOTAL_MB"])
-print(int(mb//1024))
-PY
-)
+GPU_TOTAL_GB=$((GPU_TOTAL_MB / 1024))
 if [ "$GPU_TOTAL_GB" -lt "$TARGET_VRAM_GB" ]; then echo "GPU too small"; exit 1; fi
-GPU_MEM_UTIL=$(python - <<'PY'
-import os
-target=float(os.environ["TARGET_VRAM_GB"])
-total=float(os.environ["GPU_TOTAL_GB"])
-print(f"{min(0.98,(target+0.0001)/total):.4f}")
-PY
-)
+GPU_MEM_UTIL=$(echo "scale=4; ($TARGET_VRAM_GB+0.0001)/$GPU_TOTAL_GB" | bc)
+GPU_MEM_UTIL=$(echo "$GPU_MEM_UTIL 0.98" | awk '{print ($1<$2)?$1:$2}')
 
 python -m vllm.entrypoints.openai.api_server \
     --model "$MODEL_NAME" \

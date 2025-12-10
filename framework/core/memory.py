@@ -94,14 +94,44 @@ class AgentMemory:
                     f"WARNING: You clicked '{targets[0]}' multiple times but it's not doing what you expect! "
                     "Look for a CONFIRM button like 'Set as default', 'OK', 'Apply', or 'Save'!"
                 )
+            
+            # Check if clicking same coordinates repeatedly (different targets but same location)
+            coords = [tuple(e.coordinate) for e in click_entries if e.coordinate]
+            if len(coords) >= 2:
+                # Check if all coordinates are very close (within 20 pixels)
+                first_coord = coords[0]
+                close_count = sum(1 for c in coords if abs(c[0] - first_coord[0]) < 20 and abs(c[1] - first_coord[1]) < 20)
+                if close_count >= 2:
+                    return (
+                        f"WARNING: You clicked the same area ({first_coord[0]}, {first_coord[1]}) "
+                        f"{close_count} times! The element may not exist there. "
+                        "Check the AVAILABLE ELEMENTS list and use the EXACT element name!"
+                    )
         
         # Check 3: WAIT loop (multiple consecutive WAITs)
         wait_count = sum(1 for e in recent_entries if e.action_type == ActionType.WAIT)
         if wait_count >= 2:
             return (
                 f"WARNING: You have executed WAIT {wait_count} times. "
-                "The element you're looking for may not exist. Try a DIFFERENT approach!"
+                "The element you're looking for may not exist. Try a DIFFERENT approach! "
+                "Consider using HOTKEY to open applications (e.g., HOTKEY ctrl+alt+t for terminal)."
             )
+        
+        # Check 4: Fallback pattern - element not found leading to wrong action
+        if len(recent_entries) >= 2:
+            # Check if we're stuck trying to find non-existent elements
+            type_actions = [e for e in recent_entries if e.action_type == ActionType.TYPE]
+            click_actions_recent = [e for e in recent_entries if e.action_type in click_actions]
+            
+            # If we have interspersed TYPE and CLICK actions at the same coordinate, might be failing
+            if len(type_actions) >= 1 and len(click_actions_recent) >= 2:
+                coords = [tuple(e.coordinate) for e in click_actions_recent if e.coordinate]
+                if len(set(coords)) == 1:  # All clicks at same location
+                    return (
+                        "WARNING: You seem to be typing into the wrong location! "
+                        "The input fields may not be where you're clicking. "
+                        "Look for spin-button, text, or combo-box elements with specific values like '80' or '24'."
+                    )
         
         return None
 
