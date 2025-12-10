@@ -113,7 +113,7 @@ class QwenVLClient(ModelClient):
         base_url: str = "http://127.0.0.1:8000/v1/chat/completions",
         api_key: str = "EMPTY",
         timeout: int = 120,
-        enable_screen_cache: bool = True,
+        enable_screen_cache: bool = False,  # Disabled by default - was causing amnesia
     ):
         self.model = model
         self.base_url = base_url
@@ -157,23 +157,42 @@ class QwenVLClient(ModelClient):
             "max_tokens": max_tokens,
         }
         
-        response = self._session.post(
-            self.base_url,
-            json=payload,
-            timeout=self.timeout,
-        )
-        response.raise_for_status()
-        data = response.json()
+        # Retry logic for network errors
+        max_retries = 3
+        last_error = None
+        for attempt in range(max_retries):
+            try:
+                response = self._session.post(
+                    self.base_url,
+                    json=payload,
+                    timeout=self.timeout,
+                )
+                response.raise_for_status()
+                data = response.json()
+                
+                try:
+                    result = data["choices"][0]["message"]["content"]
+                except (KeyError, IndexError) as exc:
+                    raise RuntimeError(f"Unexpected response from Qwen server: {data}") from exc
+                
+                if image is not None and self.enable_screen_cache:
+                    self._image_optimizer.cache_result(result)
+                
+                return result
+            except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as exc:
+                last_error = exc
+                if attempt < max_retries - 1:
+                    import time
+                    wait_time = 2 ** (attempt + 1)  # 2, 4, 8 seconds
+                    import logging
+                    logging.getLogger(__name__).warning(
+                        "Request failed (attempt %d/%d), retrying in %ds: %s",
+                        attempt + 1, max_retries, wait_time, exc
+                    )
+                    time.sleep(wait_time)
         
-        try:
-            result = data["choices"][0]["message"]["content"]
-        except (KeyError, IndexError) as exc:
-            raise RuntimeError(f"Unexpected response from Qwen server: {data}") from exc
-        
-        if image is not None and self.enable_screen_cache:
-            self._image_optimizer.cache_result(result)
-        
-        return result
+        # All retries failed
+        raise last_error
 
     def _attach_image(
         self, messages: List[Dict[str, Any]], image: Optional[Any]

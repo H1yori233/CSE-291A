@@ -1,13 +1,14 @@
-"""Prompt factory that produces the messages described in the guide."""
-
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 
 from framework.core.observation import Observation
 from framework.core.memory import AgentMemory
 from framework.prompts import templates
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -48,16 +49,32 @@ class PromptBuilder:
         if memory:
             history_section = memory.recent_actions_detailed(n=5)
             loop_warning = memory.detect_loop(window=3)
-            loop_warning_text = f"\n⚠️ {loop_warning}\n" if loop_warning else ""
+            if loop_warning:
+                # Make loop warning VERY prominent
+                loop_warning_text = (
+                    f"\n🚨 WARNING: {loop_warning}\n"
+                    f"Try something DIFFERENT!\n"
+                )
+            else:
+                loop_warning_text = ""
+            # Debug logging
+            logger.info("[DEBUG] History section: %s", history_section[:200] if history_section else "EMPTY")
+            logger.info("[DEBUG] Loop warning: %s", loop_warning if loop_warning else "None")
         else:
             history_section = history if history else "No previous actions yet."
             loop_warning_text = ""
         
+        # Dynamic domain knowledge injection
+        from framework.prompts.domain_hints import detect_domain, get_domain_hint
+        domain = detect_domain(observation.a11y_elements, instruction)
+        domain_hint = get_domain_hint(domain)
+        logger.info("[DEBUG] Detected domain: %s", domain)
+        
         user_prompt = templates.STEP_PROMPT.format(
             instruction=instruction,
-            plan=plan_text,
             step=step,
             max_steps=max_steps,
+            domain_hint=domain_hint,
             history_section=history_section,
             loop_warning=loop_warning_text,
             observation_text=observation_text,
@@ -88,7 +105,7 @@ class PromptBuilder:
         
         # If we have parsed a11y elements, use them (preferred for element-based grounding)
         if observation.a11y_elements:
-            parts.append(observation.format_a11y_elements(max_elements=40))
+            parts.append(observation.format_a11y_elements(max_elements=20))
         elif observation.som_elements:
             # Fallback to SoM elements
             visible = [

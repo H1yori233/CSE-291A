@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections import deque
 from dataclasses import dataclass, field
 from typing import Deque, List, Optional, Sequence
@@ -9,6 +10,8 @@ from typing import Deque, List, Optional, Sequence
 from framework.actions.grounding import GroundedAction
 from framework.actions.schema import ActionType
 from .plan import Plan
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -30,14 +33,17 @@ class AgentMemory:
         if not actions:
             return
         for act in actions:
+            target_name = act.metadata.get("element_name") if act.metadata else None
+            summary = _summarise_single(act)
             entry = MemoryEntry(
                 step=step,
-                summary=_summarise_single(act),
+                summary=summary,
                 action_type=act.action,
-                target_name=act.metadata.get("element_name") if act.metadata else None,
+                target_name=target_name,
                 coordinate=act.coordinate,
             )
             self.recent.append(entry)
+            logger.info("[DEBUG] Memory recorded: Step %d, %s (target=%s)", step, summary, target_name)
 
     def recent_summary(self) -> str:
         """Get a brief one-line summary for backward compatibility."""
@@ -64,12 +70,12 @@ class AgentMemory:
         Check if recent actions show a repetitive pattern (behavioral loop).
         Returns a warning message if loop detected, None otherwise.
         """
-        if len(self.recent) < window:
+        if len(self.recent) < 2:  # Reduced minimum to catch loops earlier
             return None
         
-        recent_entries = list(self.recent)[-window:]
+        recent_entries = list(self.recent)[-window:] if len(self.recent) >= window else list(self.recent)
         
-        # Check if all recent actions are the same type with similar targets
+        # Check 1: Exact same action repeated
         first_type = recent_entries[0].action_type
         first_summary = recent_entries[0].summary
         
@@ -78,17 +84,30 @@ class AgentMemory:
             if e.action_type == first_type and e.summary == first_summary
         )
         
-        if same_action_count >= window:
+        if same_action_count >= min(window, len(recent_entries)) and len(recent_entries) >= 2:
             return (
-                f"WARNING: You have repeated the same action '{first_summary}' "
-                f"{window} times without progress. Try a DIFFERENT approach!"
+                f"WARNING: You have repeated '{first_summary}' "
+                f"{same_action_count} times in a row. This action is NOT working! "
+                "Look at the screen - if nothing changed, try clicking a DIFFERENT element or button!"
             )
         
-        # Check for WAIT loop (multiple consecutive WAITs)
+        # Check 2: Click actions on same target element (may have slightly different summaries)
+        click_actions = {ActionType.LEFT_CLICK, ActionType.RIGHT_CLICK, ActionType.DOUBLE_CLICK}
+        click_entries = [e for e in recent_entries if e.action_type in click_actions]
+        if len(click_entries) >= 2:
+            # Check if clicking same target repeatedly
+            targets = [e.target_name for e in click_entries if e.target_name]
+            if len(targets) >= 2 and len(set(targets)) == 1:  # All same target
+                return (
+                    f"WARNING: You clicked '{targets[0]}' multiple times but it's not doing what you expect! "
+                    "Look for a CONFIRM button like 'Set as default', 'OK', 'Apply', or 'Save'!"
+                )
+        
+        # Check 3: WAIT loop (multiple consecutive WAITs)
         wait_count = sum(1 for e in recent_entries if e.action_type == ActionType.WAIT)
-        if wait_count >= window:
+        if wait_count >= 2:
             return (
-                f"WARNING: You have executed WAIT {wait_count} times consecutively. "
+                f"WARNING: You have executed WAIT {wait_count} times. "
                 "The element you're looking for may not exist. Try a DIFFERENT approach!"
             )
         
