@@ -2,7 +2,11 @@ DOMAIN_HINTS = {
     # Media players
     "vlc": (
         "VLC Tips: Preferences via Tools->Preferences (or Ctrl+P). "
-        "Interface tab has 'Show background cone or icon' checkbox. Save with 'Save'."
+        "IMPORTANT: To access advanced settings like 'cone icon', you need to switch from Simple to All mode. "
+        "Look for 'All (radio-button)' element at the bottom of the Preferences dialog and click it - "
+        "DO NOT click 'Show settings (panel)', click the actual 'All' radio button! "
+        "After switching to All mode, navigate to: Interface -> Main interfaces -> Qt. "
+        "Find 'Display background cone or art' checkbox and uncheck it. Click 'Save' and restart VLC."
     ),
     
     # Browsers
@@ -71,7 +75,6 @@ DOMAIN_HINTS = {
     ),
 }
 
-# Keywords to match for domain detection
 DOMAIN_KEYWORDS = {
     "vlc": ["vlc", "media player", "vlc media"],
     "chrome": ["chrome", "chromium", "google chrome"],
@@ -93,13 +96,11 @@ def detect_domain(a11y_elements: list, instruction: str) -> str:
     for elem in a11y_elements:
         name = (elem.name or "").lower()
         
-        # Check each domain's keywords
         for domain, keywords in DOMAIN_KEYWORDS.items():
             for keyword in keywords:
                 if keyword in name:
                     return domain
     
-    # Check instruction keywords
     instruction_lower = instruction.lower()
     for domain, keywords in DOMAIN_KEYWORDS.items():
         for keyword in keywords:
@@ -109,5 +110,19 @@ def detect_domain(a11y_elements: list, instruction: str) -> str:
     return "default"
 
 
-def get_domain_hint(domain: str) -> str:
+def get_domain_hint(domain: str, instruction: str = "") -> str:
+    if instruction:
+        try:
+            from framework.core.knowledge_retriever import create_knowledge_retriever
+            retriever = create_knowledge_retriever()
+            task_hints = retriever.get_hints_for_task(instruction, domain=domain, max_length=1000)
+            
+            if task_hints and len(task_hints) > 50:
+                return task_hints
+        except ImportError:
+            pass
+        except Exception:
+            pass
+    
     return DOMAIN_HINTS.get(domain, DOMAIN_HINTS["default"])
+

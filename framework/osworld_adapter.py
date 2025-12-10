@@ -1,5 +1,3 @@
-"""Adapter to run the refactored framework agent inside OSWorld runners."""
-
 from __future__ import annotations
 
 import logging
@@ -19,8 +17,6 @@ ActionPayload = Union[str, Dict[str, object]]
 
 
 class SafeGroundingResolver(GroundingResolver):
-    """Grounder that degrades to WAIT when targets are missing."""
-
     def __init__(self):
         super().__init__()
         self.logger = logging.getLogger("framework.adapter")
@@ -37,8 +33,6 @@ class SafeGroundingResolver(GroundingResolver):
 
 
 class FrameworkAgentAdapter:
-    """Bridges `QwenOSWorldAgent` to OSWorld's `run_single_example` interface."""
-
     def __init__(
         self,
         model_client: ModelClient,

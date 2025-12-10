@@ -1,5 +1,3 @@
-"""Observation structures consumed by the agent."""
-
 from __future__ import annotations
 
 import re
@@ -9,7 +7,6 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 
-# Namespace definitions for a11y tree parsing
 STATE_NS_UBUNTU = "https://accessibility.ubuntu.example.org/ns/state"
 STATE_NS_WINDOWS = "https://accessibility.windows.example.org/ns/state"
 COMPONENT_NS_UBUNTU = "https://accessibility.ubuntu.example.org/ns/component"
@@ -20,8 +17,6 @@ VALUE_NS_WINDOWS = "https://accessibility.windows.example.org/ns/value"
 
 @dataclass
 class A11yElement:
-    """Single accessibility tree element with position info."""
-    
     id: int  # Index for referencing
     tag: str  # Element type (button, link, etc.)
     name: str  # Element name/label
@@ -47,8 +42,6 @@ class A11yElement:
 
 @dataclass
 class Mark:
-    """Single Set-of-Mark entry."""
-
     id: str
     bbox: Tuple[int, int, int, int]
     name: Optional[str] = None
@@ -60,8 +53,6 @@ class Mark:
 
 @dataclass
 class Observation:
-    """Container for everything the model sees at a step."""
-
     screenshot: Optional[Any] = None
     marks: Dict[str, Mark] = field(default_factory=dict)
     som_elements: List[Dict[str, Any]] = field(default_factory=list)
@@ -72,12 +63,10 @@ class Observation:
     original_size: Optional[Tuple[int, int]] = None
     
     def __post_init__(self):
-        """Parse a11y_tree if provided and a11y_elements is empty."""
         if self.a11y_tree and not self.a11y_elements:
             self.a11y_elements = parse_a11y_tree(self.a11y_tree)
     
     def scale_coordinates(self, x: int, y: int) -> Tuple[int, int]:
-        """Scale coordinates from screenshot space to original screen space."""
         if not self.original_size or not self.screenshot:
             return (x, y)
         
@@ -108,7 +97,6 @@ class Observation:
         return None
 
     def lookup_named_element(self, name: str) -> Optional[List[int]]:
-        """Lookup element by name in som_elements."""
         needle = name.lower()
         for element in self.som_elements:
             label = (element.get("name") or "").lower()
@@ -120,73 +108,122 @@ class Observation:
         return None
     
     def lookup_a11y_element_by_id(self, element_id: int) -> Optional[List[int]]:
-        """Lookup a11y element by ID and return center coordinates."""
         for elem in self.a11y_elements:
             if elem.id == element_id:
                 return elem.center()
         return None
     
     def lookup_a11y_element_by_name(self, name: str, fuzzy: bool = True) -> Optional[List[int]]:
-        """Lookup a11y element by name and return center coordinates."""
         import re
+        import logging
+        logger = logging.getLogger("framework.observation")
         
         needle = name.lower().strip()
         
         # Try to extract quoted string if model included extra formatting
-        # e.g., 'toggle-button: "Customise Chrome"' -> 'customise chrome'
         quoted_match = re.search(r'"([^"]+)"', name)
         if quoted_match:
             needle = quoted_match.group(1).lower().strip()
         
-        # Exact match first
+        # Find ALL matching elements first
+        matches = []
+        
+        # Exact match
         for elem in self.a11y_elements:
             elem_name = (elem.name or "").lower().strip()
             elem_text = (elem.text or "").lower().strip()
             if elem_name == needle or elem_text == needle:
-                return elem.center()
+                matches.append(elem)
         
-        # Fuzzy match (substring both directions)
-        if fuzzy:
+        # Fuzzy match if no exact match
+        if not matches and fuzzy:
             for elem in self.a11y_elements:
                 elem_name = (elem.name or "").lower()
                 elem_text = (elem.text or "").lower()
-                # Check if needle is in element name, or element name is in needle
                 if needle in elem_name or needle in elem_text:
-                    return elem.center()
-                if elem_name and elem_name in needle:
-                    return elem.center()
-                if elem_text and elem_text in needle:
-                    return elem.center()
+                    matches.append(elem)
+                elif elem_name and elem_name in needle:
+                    matches.append(elem)
+                elif elem_text and elem_text in needle:
+                    matches.append(elem)
         
-        return None
+        if not matches:
+            return None
+        
+        # Smart container handling: prioritize interactive elements over containers
+        interactive_matches = [m for m in matches if m.tag.lower() not in self.NON_INTERACTIVE_TAGS]
+        container_matches = [m for m in matches if m.tag.lower() in self.NON_INTERACTIVE_TAGS]
+        
+        # If we have interactive matches, use the first one
+        if interactive_matches:
+            return interactive_matches[0].center()
+        
+        # If we only have container matches, look for nearby interactive children
+        if container_matches:
+            container = container_matches[0]
+            container_center = container.center()
+            
+            if container_center:
+                # Look for interactive elements near this container
+                nearby_interactive = []
+                for elem in self.a11y_elements:
+                    if elem.tag.lower() in self.NON_INTERACTIVE_TAGS:
+                        continue
+                    elem_center = elem.center()
+                    if elem_center:
+                        dx = abs(elem_center[0] - container_center[0])
+                        dy = abs(elem_center[1] - container_center[1])
+                        if dx < 200 and dy < 50:
+                            nearby_interactive.append((elem, dx + dy))
+                
+                if nearby_interactive:
+                    nearby_interactive.sort(key=lambda x: x[1])
+                    chosen = nearby_interactive[0][0]
+                    logger.info(
+                        "[DEBUG] Container '%s' clicked, redirecting to nearby '%s' (%s)",
+                        container.name, chosen.name, chosen.tag
+                    )
+                    return chosen.center()
+            
+            return container_center
+        
+        return matches[0].center()
     
-    def format_a11y_elements(self, max_elements: int = 50) -> str:
-        """Format a11y elements as a numbered list for the prompt."""
+    # Container element types that are not directly clickable
+    NON_INTERACTIVE_TAGS = {
+        'panel', 'frame', 'layered-pane', 'filler', 'scroll-pane', 
+        'viewport', 'separator', 'unknown', 'section', 'document',
+        'application', 'root-pane', 'glass-pane', 'content-pane',
+        'internal-frame', 'desktop-pane', 'option-pane',
+    }
+    
+    def is_interactive_element(self, elem: 'A11yElement') -> bool:
+        tag = (elem.tag or "").lower()
+        if tag in self.NON_INTERACTIVE_TAGS:
+            return False
+        return True
+    
+    def format_a11y_elements(self, max_elements: int = 50, filter_containers: bool = True) -> str:
         if not self.a11y_elements:
             return ""
         
-        lines = ["Clickable Elements (use element name in target):"]
-        for elem in self.a11y_elements[:max_elements]:
+        # Filter elements if requested
+        if filter_containers:
+            interactive_elements = [e for e in self.a11y_elements if self.is_interactive_element(e)]
+        else:
+            interactive_elements = self.a11y_elements
+        
+        lines = ["Clickable Elements (use EXACT element name in target):"]
+        for elem in interactive_elements[:max_elements]:
             lines.append(str(elem))
         
-        if len(self.a11y_elements) > max_elements:
-            lines.append(f"... and {len(self.a11y_elements) - max_elements} more elements")
+        if len(interactive_elements) > max_elements:
+            lines.append(f"... and {len(interactive_elements) - max_elements} more elements")
         
         return "\n".join(lines)
 
 
 def parse_a11y_tree(a11y_tree_xml: str, platform: str = "ubuntu") -> List[A11yElement]:
-    """
-    Parse accessibility tree XML and extract interactive elements with bounding boxes.
-    Uses a more permissive filter similar to OSWorld's heuristic_retrieve.
-    
-    Args:
-        a11y_tree_xml: Raw XML string from OSWorld accessibility tree
-        platform: "ubuntu" or "windows"
-    
-    Returns:
-        List of A11yElement with id, tag, name, and bbox
-    """
     if not a11y_tree_xml or not a11y_tree_xml.strip():
         return []
     

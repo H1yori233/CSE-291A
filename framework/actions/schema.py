@@ -1,5 +1,3 @@
-"""Action schema aligned with the Computer_13 space described in GUIDE.md."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -8,8 +6,6 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 
 class ActionType(str, Enum):
-    """Enumeration of allowed primitive actions."""
-
     MOVE_CURSOR = "MOVE_CURSOR"
     LEFT_CLICK = "LEFT_CLICK"
     RIGHT_CLICK = "RIGHT_CLICK"
@@ -27,36 +23,23 @@ class ActionType(str, Enum):
 
 @dataclass
 class ActionTarget:
-    """Target for pointer actions.
-
-    type may be:
-    - "mark": Set-of-Mark id
-    - "coordinate": absolute pixels (x, y)
-    - "element": accessibility tree element name
-    """
-
     type: str
     id: Optional[str] = None
     x: Optional[int] = None
     y: Optional[int] = None
-    name: Optional[str] = None  # For element-based targeting
+    name: Optional[str] = None
 
     def as_coordinate(self) -> Optional[List[int]]:
-        """Return a `[x, y]` list if enough info is available."""
-
         if self.type == "coordinate" and self.x is not None and self.y is not None:
             return [int(self.x), int(self.y)]
         return None
     
     def is_element(self) -> bool:
-        """Check if this is an element-based target."""
         return self.type == "element" and self.name is not None
 
 
 @dataclass
 class Action:
-    """Structured action emitted by the language model."""
-
     action: ActionType
     source: Optional[ActionTarget] = None
     target: Optional[ActionTarget] = None
@@ -70,8 +53,6 @@ class Action:
 
     @classmethod
     def from_dict(cls, payload: Dict[str, Any]) -> "Action":
-        """Create an action from model JSON."""
-
         if "action" not in payload:
             raise ValueError("Action is missing the 'action' field")
 
@@ -131,8 +112,6 @@ class Action:
 
 @dataclass
 class ActionBatch:
-    """Group of actions emitted in a single reasoning step."""
-
     actions: List[Action]
 
     def __iter__(self):
@@ -148,8 +127,6 @@ class ActionBatch:
 
 
 def unpack_actions(action_block: Any) -> ActionBatch:
-    """Parse the user-provided JSON `actions` field into structured objects."""
-
     if action_block in (None, ""):
         return ActionBatch(actions=[])
 

@@ -64,10 +64,10 @@ class PromptBuilder:
             history_section = history if history else "No previous actions yet."
             loop_warning_text = ""
         
-        # Dynamic domain knowledge injection
+        # Dynamic domain knowledge injection with RAG-based retrieval
         from framework.prompts.domain_hints import detect_domain, get_domain_hint
         domain = detect_domain(observation.a11y_elements, instruction)
-        domain_hint = get_domain_hint(domain)
+        domain_hint = get_domain_hint(domain, instruction=instruction)  # Pass instruction for RAG lookup
         logger.info("[DEBUG] Detected domain: %s", domain)
         
         user_prompt = templates.STEP_PROMPT.format(

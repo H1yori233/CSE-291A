@@ -1,5 +1,3 @@
-"""Qwen VL client with optimization features."""
-
 from __future__ import annotations
 
 import base64
@@ -18,8 +16,6 @@ except ImportError:
 
 
 class ModelClient(ABC):
-    """Abstract chat completion interface."""
-
     @abstractmethod
     def generate(
         self,
@@ -36,8 +32,6 @@ class ModelClient(ABC):
 
 
 class ImageOptimizer:
-    """Handles image compression and deduplication."""
-
     MAX_SIZE: int = 768
     JPEG_QUALITY: int = 85
     PHASH_THRESHOLD: int = 5
@@ -47,8 +41,6 @@ class ImageOptimizer:
         self._prev_result: Optional[str] = None
 
     def compress(self, image: Any) -> Tuple[bytes, str]:
-        """Compresses an image and returns its bytes and a base64 data URL."""
-        # Copy to prevent modification of original
         img = image.copy()
         
         # Resize while maintaining aspect ratio
@@ -105,8 +97,6 @@ class ImageOptimizer:
 
 
 class QwenVLClient(ModelClient):
-    """Client for the local vLLM endpoint that serves Qwen3-VL."""
-
     def __init__(
         self,
         model: str = "Qwen/Qwen3-VL-8B-Instruct-FP8",
@@ -222,11 +212,9 @@ class QwenVLClient(ModelClient):
         return f"qwen_vl/{self.model}"
 
     def reset_cache(self) -> None:
-        """Reset same-screen cache (call when starting new task)."""
         self._image_optimizer.reset()
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get optimization statistics."""
         hit_rate = 0.0
         if self.stats["total_requests"] > 0:
             hit_rate = self.stats["cache_hits"] / self.stats["total_requests"]
@@ -236,7 +224,6 @@ class QwenVLClient(ModelClient):
         }
 
     def close(self) -> None:
-        """Close the session."""
         self._session.close()
 
 

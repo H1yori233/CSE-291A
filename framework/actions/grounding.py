@@ -1,5 +1,3 @@
-"""Resolve abstract action targets into executable coordinates."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -7,7 +5,7 @@ from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
 
 from .schema import Action, ActionTarget, ActionType
 
-if TYPE_CHECKING:  # pragma: no cover - for typing only
+if TYPE_CHECKING:
     from framework.core.observation import Observation
 
 
@@ -23,8 +21,6 @@ _SCROLL_ACTIONS = {ActionType.SCROLL_UP, ActionType.SCROLL_DOWN}
 
 @dataclass
 class GroundedAction:
-    """An action that is ready to be executed inside the environment."""
-
     action: ActionType
     coordinate: Optional[List[int]] = None
     drag: Optional[Tuple[List[int], List[int]]] = None

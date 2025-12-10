@@ -1,5 +1,3 @@
-"""Memory helpers for the agent."""
-
 from __future__ import annotations
 
 import logging
@@ -46,13 +44,11 @@ class AgentMemory:
             logger.info("[DEBUG] Memory recorded: Step %d, %s (target=%s)", step, summary, target_name)
 
     def recent_summary(self) -> str:
-        """Get a brief one-line summary for backward compatibility."""
         if not self.recent:
             return ""
         return " | ".join(f"Step {e.step}: {e.summary}" for e in self.recent)
     
     def recent_actions_detailed(self, n: int = 5) -> str:
-        """Return detailed action history for structured reasoning prompt."""
         if not self.recent:
             return "No previous actions taken yet."
         
@@ -66,10 +62,6 @@ class AgentMemory:
         return "\n".join(lines)
     
     def detect_loop(self, window: int = 3) -> Optional[str]:
-        """
-        Check if recent actions show a repetitive pattern (behavioral loop).
-        Returns a warning message if loop detected, None otherwise.
-        """
         if len(self.recent) < 2:  # Reduced minimum to catch loops earlier
             return None
         
@@ -125,7 +117,6 @@ class AgentMemory:
 
 
 def _summarise_single(act: GroundedAction) -> str:
-    """Summarize a single action."""
     if act.action in {ActionType.LEFT_CLICK, ActionType.RIGHT_CLICK, ActionType.DOUBLE_CLICK}:
         if act.metadata and act.metadata.get("element_name"):
             return f"{act.action.value} on \"{act.metadata['element_name']}\""
@@ -146,5 +137,4 @@ def _summarise_single(act: GroundedAction) -> str:
 
 
 def _summarise(actions: Sequence[GroundedAction]) -> str:
-    """Summarize multiple actions into one line."""
     return ", ".join(_summarise_single(act) for act in actions)

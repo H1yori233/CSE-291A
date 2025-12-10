@@ -1,0 +1,1616 @@
+{
+    "vlc": {
+        "name": "VLC Media Player",
+        "general_tips": [
+            "VLC preferences are split into 'Simple' and 'All' modes – many settings are only visible in 'All' mode.",
+            "To access advanced settings: Tools → Preferences, then click the 'All' radio button at the bottom left.",
+            "The VLC configuration file is located at ~/.config/vlc/vlcrc for fine‑tuned adjustments.",
+            "Press Space to toggle play/pause, F to toggle full screen and M to mute/unmute.",
+            "You can drag and drop media files directly into the player window to start playback."
+        ],
+        "specific_knowledge": {
+            "disable cone icon": {
+                "steps": [
+                    "1. Open VLC Media Player.",
+                    "2. Go to Tools → Preferences (or press Ctrl+P).",
+                    "3. IMPORTANT: Click the 'All' radio button at the bottom left to show all settings.",
+                    "4. In the left panel tree: click on 'Interface' to expand it.",
+                    "5. Click on 'Main interfaces' to expand it.",
+                    "6. Click on 'Qt' under Main interfaces.",
+                    "7. In the right panel, uncheck 'Display background cone or art'.",
+                    "8. Click Save and restart VLC."
+                ],
+                "keywords": [
+                    "cone",
+                    "splash",
+                    "background",
+                    "icon",
+                    "art"
+                ],
+                "checkbox_name": "Display background cone or art",
+                "config_key": "qt-bgcone"
+            },
+            "hide toolbar": {
+                "steps": [
+                    "1. Open VLC and go to Tools → Preferences.",
+                    "2. Click 'All' to show advanced settings.",
+                    "3. Navigate to Interface → Main interfaces → Qt.",
+                    "4. Check 'Start in minimal view mode'.",
+                    "5. Or use Ctrl+H to toggle minimal view."
+                ],
+                "keywords": [
+                    "toolbar",
+                    "hide",
+                    "minimal",
+                    "view"
+                ],
+                "checkbox_name": "Start in minimal view mode"
+            },
+            "multiple instances": {
+                "steps": [
+                    "1. Open VLC and go to Tools → Preferences.",
+                    "2. Look for the 'Playlist and Instances' section.",
+                    "3. Uncheck 'Use only one instance when started from file manager'.",
+                    "4. Uncheck 'Allow only one instance'.",
+                    "5. Click Save."
+                ],
+                "keywords": [
+                    "instance",
+                    "multiple",
+                    "two",
+                    "videos"
+                ],
+                "checkbox_name": "Allow only one instance"
+            },
+            "add subtitles": {
+                "steps": [
+                    "1. Play your video in VLC.",
+                    "2. Click on Subtitle → Add Subtitle File…",
+                    "3. Browse to the .srt or subtitle file and select it.",
+                    "4. The subtitles will load automatically during playback."
+                ],
+                "keywords": [
+                    "subtitle",
+                    "add",
+                    "srt",
+                    "captions"
+                ]
+            },
+            "adjust playback speed": {
+                "steps": [
+                    "1. Open your media in VLC.",
+                    "2. Press '+' to increase speed or '-' to decrease speed.",
+                    "3. Alternatively, go to Playback → Speed and choose Faster, Slower or Normal."
+                ],
+                "keywords": [
+                    "speed",
+                    "playback",
+                    "faster",
+                    "slower"
+                ]
+            },
+            "take snapshot": {
+                "steps": [
+                    "1. Pause the video at the frame you want to capture.",
+                    "2. Go to Video → Take Snapshot or press Shift+S.",
+                    "3. The snapshot will be saved to your pictures directory (check Preferences → Video for the exact path)."
+                ],
+                "keywords": [
+                    "snapshot",
+                    "screenshot",
+                    "frame",
+                    "capture"
+                ]
+            },
+            "loop playback": {
+                "steps": [
+                    "1. Start playing a media file in VLC.",
+                    "2. Click the Loop button in the control bar or press L until the desired loop mode (repeat one or repeat all) is selected.",
+                    "3. The playback will now repeat according to the chosen mode."
+                ],
+                "keywords": [
+                    "loop",
+                    "repeat",
+                    "playback"
+                ],
+                "checkbox_name": "Loop/Repeat"
+            },
+            "adjust volume": {
+                "steps": [
+                    "1. While watching a video or listening to audio, press Ctrl+Up Arrow to increase volume.",
+                    "2. Press Ctrl+Down Arrow to decrease volume.",
+                    "3. You can also use the mouse wheel over the volume slider in the player interface."
+                ],
+                "keywords": [
+                    "volume",
+                    "sound",
+                    "loud",
+                    "mute"
+                ]
+            },
+            "rotate video": {
+                "steps": [
+                    "1. Open the video file in VLC.",
+                    "2. Go to Tools → Effects and Filters.",
+                    "3. In the Video Effects tab, open the Geometry sub‑tab.",
+                    "4. Check 'Transform' and choose the rotation angle (e.g., Rotate by 90 degrees) from the drop‑down list.",
+                    "5. Click Close to preview the rotated video.",
+                    "6. To permanently save the rotated video, go to Media → Convert/Save, add the video, click Convert/Save, choose a profile and click Start; VLC will encode the rotated video to a new file."
+                ],
+                "keywords": [
+                    "rotate",
+                    "video",
+                    "orientation",
+                    "geometry"
+                ]
+            },
+            "extract audio to mp3": {
+                "steps": [
+                    "1. Open VLC and go to Media → Convert/Save.",
+                    "2. Click Add and select the video file whose audio you want to extract.",
+                    "3. Click Convert/Save to open the conversion dialog.",
+                    "4. Under Profile, choose 'Audio – MP3'.",
+                    "5. Click Browse to choose a destination filename with .mp3 extension and click Save.",
+                    "6. Click Start to begin the conversion; the resulting MP3 file will be saved at the chosen location."
+                ],
+                "keywords": [
+                    "mp3",
+                    "convert",
+                    "audio",
+                    "extract",
+                    "music"
+                ]
+            },
+            "trim video segment": {
+                "steps": [
+                    "1. Open VLC and go to View → Advanced Controls to reveal red record button.",
+                    "2. Play the video and navigate to the starting point of the segment you want to keep.",
+                    "3. Click the red record button to start recording.",
+                    "4. Let the video play until it reaches the end of the desired segment, then click the record button again to stop.",
+                    "5. The trimmed segment will be saved in your Videos folder (the exact location is shown in VLC’s message log)."
+                ],
+                "keywords": [
+                    "trim",
+                    "cut",
+                    "segment",
+                    "record",
+                    "clip"
+                ]
+            }
+        }
+    },
+    "libreoffice_writer": {
+        "name": "LibreOffice Writer",
+        "general_tips": [
+            "Use the Format menu for text formatting operations.",
+            "Ctrl+S to save, Ctrl+Shift+S for Save As.",
+            "Export to PDF via File → Export As → Export as PDF.",
+            "Ctrl+B toggles bold; Ctrl+I toggles italic; Ctrl+U toggles underline.",
+            "Use the Styles and Formatting sidebar (F11) to apply consistent headings and paragraph styles."
+        ],
+        "specific_knowledge": {
+            "change font": {
+                "steps": [
+                    "1. Select the text you want to modify.",
+                    "2. Go to Format → Character.",
+                    "3. In the Font tab, select the desired font and size.",
+                    "4. Click OK."
+                ],
+                "keywords": [
+                    "font",
+                    "size",
+                    "change",
+                    "text",
+                    "character"
+                ]
+            },
+            "center align": {
+                "steps": [
+                    "1. Select the text or heading.",
+                    "2. Press Ctrl+E for center alignment.",
+                    "3. Or go to Format → Align → Centered."
+                ],
+                "keywords": [
+                    "center",
+                    "align",
+                    "heading",
+                    "text"
+                ]
+            },
+            "bold text": {
+                "steps": [
+                    "1. Highlight the text you want to embolden.",
+                    "2. Press Ctrl+B or click the Bold icon on the toolbar.",
+                    "3. Press Ctrl+B again to remove bold formatting."
+                ],
+                "keywords": [
+                    "bold",
+                    "strong",
+                    "emphasize"
+                ]
+            },
+            "change line spacing": {
+                "steps": [
+                    "1. Select the paragraph(s) whose spacing you want to change.",
+                    "2. Go to Format → Paragraph.",
+                    "3. In the Indents & Spacing tab, choose Single, 1.5 Lines, Double, or custom spacing from the Line Spacing dropdown.",
+                    "4. Click OK."
+                ],
+                "keywords": [
+                    "line spacing",
+                    "paragraph",
+                    "double space",
+                    "single space"
+                ]
+            },
+            "insert bullet list": {
+                "steps": [
+                    "1. Place the cursor where you want to create a list or select existing lines.",
+                    "2. Click the Bullets and Numbering icon on the toolbar or go to Format → Bullets and Numbering.",
+                    "3. Choose a bullet style and click OK."
+                ],
+                "keywords": [
+                    "bullet",
+                    "list",
+                    "numbering",
+                    "unordered"
+                ]
+            },
+            "insert image": {
+                "steps": [
+                    "1. Place the cursor at the insertion point in your document.",
+                    "2. Go to Insert → Image.",
+                    "3. Browse to the image file and click Open.",
+                    "4. Resize or move the image as needed using the handles."
+                ],
+                "keywords": [
+                    "insert image",
+                    "picture",
+                    "photo",
+                    "graphic"
+                ]
+            },
+            "add header or footer": {
+                "steps": [
+                    "1. Go to Insert → Header and Footer.",
+                    "2. Choose Default Style (or another page style) for Header or Footer.",
+                    "3. A header/footer area appears where you can type your text (e.g., page numbers, document title)."
+                ],
+                "keywords": [
+                    "header",
+                    "footer",
+                    "page number",
+                    "top",
+                    "bottom"
+                ]
+            },
+            "save as pdf": {
+                "steps": [
+                    "1. Finish editing your document in Writer.",
+                    "2. Go to File → Export As → Export as PDF.",
+                    "3. Choose the export options (e.g., range, image resolution) and click Export.",
+                    "4. Enter the file name and location, then click Save."
+                ],
+                "keywords": [
+                    "pdf",
+                    "export",
+                    "save as",
+                    "portable document"
+                ]
+            },
+            "change text to lowercase": {
+                "steps": [
+                    "1. Select the text you want to convert to lowercase.",
+                    "2. Go to Format → Text → Lowercase.",
+                    "3. The selected text will change to all lowercase characters."
+                ],
+                "keywords": [
+                    "lowercase",
+                    "case conversion",
+                    "capitalization",
+                    "small letters"
+                ]
+            },
+            "convert comma separated text to table": {
+                "steps": [
+                    "1. Select the comma‑separated values in your document.",
+                    "2. Go to Table → Convert → Text to Table…",
+                    "3. Under 'Separate text at', choose Commas (,).",
+                    "4. Specify the number of columns if needed and click OK; the text will convert into a table."
+                ],
+                "keywords": [
+                    "text to table",
+                    "comma separated",
+                    "csv",
+                    "convert"
+                ]
+            },
+            "insert blank line after sentences": {
+                "steps": [
+                    "1. Place the cursor at the end of a sentence.",
+                    "2. Press Enter twice to create a blank line after the sentence.",
+                    "3. Repeat for each sentence you need to separate.",
+                    "4. Alternatively, use Find & Replace with a regular expression to automate: search for \".\" and replace with \".\n\n\" with Regular expressions enabled."
+                ],
+                "keywords": [
+                    "blank line",
+                    "paragraph spacing",
+                    "separate sentences"
+                ]
+            },
+            "insert page break": {
+                "steps": [
+                    "1. Place the cursor where you want to start a new page.",
+                    "2. Go to Insert → Page Break or press Ctrl+Enter.",
+                    "3. A blank page will be inserted after the current content."
+                ],
+                "keywords": [
+                    "page break",
+                    "new page",
+                    "blank page",
+                    "insert"
+                ]
+            },
+            "highlight vowels and consonants": {
+                "steps": [
+                    "1. Select the word list or text you want to color.",
+                    "2. Use the toolbar’s Text Color dropdown to choose a color for vowels (e.g., red).",
+                    "3. Manually highlight each word starting with a vowel and apply the chosen color.",
+                    "4. Then choose another color (e.g., blue) for consonant‑starting words and apply it similarly.",
+                    "5. You can use Find → Find & Replace with regular expressions to select words starting with vowels or consonants for faster formatting."
+                ],
+                "keywords": [
+                    "color words",
+                    "vowels",
+                    "consonants",
+                    "highlight",
+                    "formatting"
+                ]
+            }
+        }
+    },
+    "libreoffice_calc": {
+        "name": "LibreOffice Calc",
+        "general_tips": [
+            "Use formulas starting with = to perform calculations.",
+            "Press Enter to confirm cell input.",
+            "Ctrl+Home jumps to cell A1; Ctrl+Arrow keys jump to the end of data ranges.",
+            "Use Data → Define Range to name ranges for easier formula references.",
+            "AutoSave can be configured under Tools → Options → Load/Save → General."
+        ],
+        "specific_knowledge": {
+            "sum column": {
+                "steps": [
+                    "1. Click on the cell where you want the sum.",
+                    "2. Type =SUM( and select the range of cells you want to add.",
+                    "3. Close the parenthesis and press Enter."
+                ],
+                "keywords": [
+                    "sum",
+                    "total",
+                    "add",
+                    "column"
+                ]
+            },
+            "sort column": {
+                "steps": [
+                    "1. Select the data range you want to sort (including the column headers, if present).",
+                    "2. Go to Data → Sort.",
+                    "3. Choose the column to sort by and select Ascending or Descending order.",
+                    "4. Click OK to apply the sort."
+                ],
+                "keywords": [
+                    "sort",
+                    "ascending",
+                    "descending",
+                    "order"
+                ]
+            },
+            "create chart": {
+                "steps": [
+                    "1. Highlight the data range you want to visualize, including headers.",
+                    "2. Click Insert → Chart or press F11.",
+                    "3. Choose the chart type (e.g., line, bar, pie) and click Next.",
+                    "4. Adjust the data series and labels if necessary, then click Finish to insert the chart."
+                ],
+                "keywords": [
+                    "chart",
+                    "graph",
+                    "plot",
+                    "visualize",
+                    "insert"
+                ]
+            },
+            "filter data": {
+                "steps": [
+                    "1. Select the range or table you want to filter.",
+                    "2. Go to Data → AutoFilter.",
+                    "3. Drop‑down arrows appear on your column headers; click an arrow and choose criteria to filter rows.",
+                    "4. Clear the filter via Data → AutoFilter again."
+                ],
+                "keywords": [
+                    "filter",
+                    "auto filter",
+                    "subset",
+                    "criteria"
+                ]
+            },
+            "freeze top row": {
+                "steps": [
+                    "1. Click in the row below the row you want to freeze (e.g., click A2 to freeze the first row).",
+                    "2. Go to View → Freeze Rows and Columns → Freeze First Row.",
+                    "3. A thick line will appear indicating the frozen row.",
+                    "4. To unfreeze, return to View → Freeze Rows and Columns and deselect the option."
+                ],
+                "keywords": [
+                    "freeze",
+                    "header row",
+                    "fixed",
+                    "scroll"
+                ]
+            },
+            "insert formula": {
+                "steps": [
+                    "1. Select the cell where you want the result to appear.",
+                    "2. Type '=' followed by your formula (e.g., =A2*B2 for multiplication, =AVERAGE(A1:A10) for an average).",
+                    "3. Press Enter to calculate the result.",
+                    "4. Use the formula bar to edit complex formulas."
+                ],
+                "keywords": [
+                    "formula",
+                    "calculate",
+                    "average",
+                    "multiply"
+                ]
+            },
+            "set decimal separator to comma": {
+                "steps": [
+                    "1. Select the range of numbers you want to change or press Ctrl+A to select the entire sheet.",
+                    "2. Go to Format → Cells… and open the Numbers tab.",
+                    "3. Choose a Number category (e.g., Number) and click the 'Format' field.",
+                    "4. In the Format Code box, replace the period (.) decimal separator with a comma (,), such as #,##0.00 → #,##0,00.",
+                    "5. Click OK to apply; numbers will display with commas as decimal separators."
+                ],
+                "keywords": [
+                    "decimal separator",
+                    "comma",
+                    "format numbers",
+                    "locale"
+                ]
+            },
+            "pad numbers to 7 digits": {
+                "steps": [
+                    "1. Suppose the original numbers are in column A (Old ID). Select the cell in the new column (e.g., B2).",
+                    "2. Enter the formula =TEXT(A2;\"0000000\") and press Enter; this pads the number with leading zeros to 7 digits.",
+                    "3. Drag the fill handle down to apply the formula to the rest of the column.",
+                    "4. Copy and Paste Special → Values if you need to convert formulas to static text."
+                ],
+                "keywords": [
+                    "pad zeros",
+                    "seven digits",
+                    "leading zeros",
+                    "format"
+                ]
+            },
+            "calculate age from birthdays": {
+                "steps": [
+                    "1. If the birthdates are in column B, select the cell where you want to display the age (e.g., C2).",
+                    "2. Enter the formula =INT((TODAY()-B2)/365.25) to approximate the age in years.",
+                    "3. Press Enter and copy the formula down the column for other rows.",
+                    "4. Alternatively, use =DATEDIF(B2;TODAY();\"Y\") for an exact whole number of years."
+                ],
+                "keywords": [
+                    "age",
+                    "birthdate",
+                    "DATEDIF",
+                    "calculate"
+                ]
+            },
+            "remove duplicates and list unique": {
+                "steps": [
+                    "1. Select the column containing names or values with duplicates.",
+                    "2. Copy the column to a new location where you want the unique list.",
+                    "3. With the copied range selected, go to Data → More Filters → Standard Filter.",
+                    "4. Choose 'No duplication' under Options and click OK; only unique entries remain.",
+                    "5. Alternatively, use the function =UNIQUE(A1:A100) if your LibreOffice version supports it."
+                ],
+                "keywords": [
+                    "remove duplicates",
+                    "unique values",
+                    "filter",
+                    "deduplicate"
+                ]
+            },
+            "create pivot table": {
+                "steps": [
+                    "1. Select the data range you want to analyze (including column headers).",
+                    "2. Go to Insert → Pivot Table… and choose 'Current selection'.",
+                    "3. In the Pivot Table Layout dialog, drag the field (e.g., Invoice Number) to the Row Fields area and drag the same field to the Data Fields area with the function 'Count'.",
+                    "4. Click OK; a new sheet appears with the pivot table summarizing counts per invoice number."
+                ],
+                "keywords": [
+                    "pivot table",
+                    "pivot",
+                    "summarize",
+                    "count"
+                ]
+            }
+        }
+    },
+    "chrome": {
+        "name": "Google Chrome / Chromium",
+        "general_tips": [
+            "Settings are accessed via the three‑dot menu → Settings.",
+            "chrome://extensions manages installed extensions.",
+            "Ctrl+Shift+N opens a new Incognito window.",
+            "Ctrl+L focuses the address bar; you can quickly type a URL or search query.",
+            "Use Bookmark bar (Ctrl+Shift+B) to toggle its visibility."
+        ],
+        "specific_knowledge": {
+            "change search engine": {
+                "steps": [
+                    "1. Open Chrome and go to Settings via the three‑dot menu.",
+                    "2. Click on 'Search engine' in the sidebar.",
+                    "3. Click 'Manage search engines and site search'.",
+                    "4. Find your desired search engine in the list and click the three dots next to it.",
+                    "5. Select 'Make default'."
+                ],
+                "keywords": [
+                    "search",
+                    "engine",
+                    "bing",
+                    "google",
+                    "default"
+                ]
+            },
+            "clear browsing data": {
+                "steps": [
+                    "1. Press Ctrl+Shift+Delete or go to Settings → Privacy and security → Clear browsing data.",
+                    "2. Choose the time range (e.g., Last hour, Last 24 hours, All time).",
+                    "3. Select which data to remove (Browsing history, Cookies, Cached images/files).",
+                    "4. Click Clear data."
+                ],
+                "keywords": [
+                    "clear",
+                    "cache",
+                    "history",
+                    "cookies"
+                ]
+            },
+            "open incognito window": {
+                "steps": [
+                    "1. Press Ctrl+Shift+N to open a new Incognito window.",
+                    "2. Alternatively, click the three‑dot menu and choose 'New Incognito window'.",
+                    "3. Incognito mode will not save browsing history or cookies."
+                ],
+                "keywords": [
+                    "incognito",
+                    "private",
+                    "anonymous",
+                    "hidden"
+                ]
+            },
+            "bookmark page": {
+                "steps": [
+                    "1. While on the page you want to bookmark, press Ctrl+D or click the star icon in the address bar.",
+                    "2. Choose a folder or create a new one for the bookmark.",
+                    "3. Rename the bookmark if desired and click Done."
+                ],
+                "keywords": [
+                    "bookmark",
+                    "favorite",
+                    "star",
+                    "save page"
+                ]
+            },
+            "set homepage": {
+                "steps": [
+                    "1. Go to Settings → On startup.",
+                    "2. Select 'Open a specific page or set of pages'.",
+                    "3. Click 'Add a new page' and enter the desired homepage URL.",
+                    "4. Click Add to save the homepage."
+                ],
+                "keywords": [
+                    "homepage",
+                    "start page",
+                    "open on startup"
+                ]
+            },
+            "disable notifications": {
+                "steps": [
+                    "1. Open Settings → Privacy and security → Site settings.",
+                    "2. Under 'Permissions', click Notifications.",
+                    "3. Toggle 'Sites can ask to send notifications' off, or manage the block/allow lists for specific sites."
+                ],
+                "keywords": [
+                    "notification",
+                    "pop‑up",
+                    "alert",
+                    "block"
+                ]
+            },
+            "change search results per page": {
+                "steps": [
+                    "1. Perform a Google search or go to google.com and sign in if necessary.",
+                    "2. Click the Settings gear icon below the search bar and choose 'Search settings'.",
+                    "3. Under 'Results per page', move the slider to the desired number (e.g., 50).",
+                    "4. Scroll down and click Save; confirm if prompted.",
+                    "5. Your search results pages will now show the specified number of results."
+                ],
+                "keywords": [
+                    "results per page",
+                    "search settings",
+                    "Google",
+                    "50 results",
+                    "slider"
+                ]
+            },
+            "create desktop shortcut": {
+                "steps": [
+                    "1. Open the website you want to create a shortcut for.",
+                    "2. Click the three‑dot menu → More tools → Create shortcut…",
+                    "3. Optionally rename the shortcut and choose 'Open as window' if you want it to behave like an app.",
+                    "4. Click Create; a desktop icon will appear that opens the site in Chrome."
+                ],
+                "keywords": [
+                    "desktop shortcut",
+                    "create shortcut",
+                    "web app",
+                    "pwa"
+                ]
+            },
+            "install unpacked extension": {
+                "steps": [
+                    "1. Unzip or extract the extension folder if it is in a .zip file.",
+                    "2. Go to chrome://extensions in the address bar.",
+                    "3. Toggle Developer mode on (switch in the top right).",
+                    "4. Click 'Load unpacked' and browse to the extension’s extracted folder.",
+                    "5. Select the folder and click Open; the extension will load and appear in your extensions list."
+                ],
+                "keywords": [
+                    "extension",
+                    "unpacked",
+                    "developer mode",
+                    "load unpacked",
+                    "zip"
+                ]
+            },
+            "delete cookies for a site": {
+                "steps": [
+                    "1. Open Settings → Privacy and security → Site settings.",
+                    "2. Click 'View permissions and data stored across sites' or 'All sites'.",
+                    "3. Scroll to or search for the domain (e.g., amazon.com) and click the arrow.",
+                    "4. Click 'Clear data' or 'Delete' to remove cookies and site data for that specific site.",
+                    "5. Confirm the deletion when prompted."
+                ],
+                "keywords": [
+                    "cookies",
+                    "site data",
+                    "delete",
+                    "clear"
+                ]
+            },
+            "install extension from file": {
+                "steps": [
+                    "1. Obtain the .crx or .zip extension file on your computer.",
+                    "2. Navigate to chrome://extensions and enable Developer mode.",
+                    "3. Drag and drop the .crx file onto the extensions page or click 'Load unpacked' and select the extracted folder if zipped.",
+                    "4. Confirm installation when Chrome prompts you.",
+                    "5. The extension will be added to your browser."
+                ],
+                "keywords": [
+                    "install extension",
+                    "crx",
+                    "vsix",
+                    "load from file",
+                    "third party"
+                ]
+            }
+        }
+    },
+    "gimp": {
+        "name": "GNU Image Manipulation Program",
+        "general_tips": [
+            "The Colors menu contains brightness, contrast and saturation adjustments.",
+            "Use File → Export As to save in different formats (PNG, JPEG, etc.).",
+            "Layers are essential for non‑destructive editing; use the Layers panel to add, hide or reorder layers.",
+            "Right‑clicking on an image opens a context menu with many operations for the selected tool.",
+            "Use Ctrl+Z to undo and Ctrl+Shift+Z to redo edits."
+        ],
+        "specific_knowledge": {
+            "adjust brightness": {
+                "steps": [
+                    "1. Open an image in GIMP.",
+                    "2. Go to Colors → Brightness‑Contrast.",
+                    "3. Adjust the Brightness and Contrast sliders to your liking.",
+                    "4. Click OK to apply the changes."
+                ],
+                "keywords": [
+                    "brightness",
+                    "dark",
+                    "light",
+                    "contrast"
+                ]
+            },
+            "crop image": {
+                "steps": [
+                    "1. Select the Crop Tool from the toolbox (or press Shift+C).",
+                    "2. Click and drag to draw a rectangle over the area you want to keep.",
+                    "3. Press Enter to crop the image to the selected region."
+                ],
+                "keywords": [
+                    "crop",
+                    "cut",
+                    "trim",
+                    "selection"
+                ]
+            },
+            "resize image": {
+                "steps": [
+                    "1. Go to Image → Scale Image…",
+                    "2. Enter the new Width and Height values (maintain aspect ratio by clicking the chain icon).",
+                    "3. Choose an interpolation method (e.g., Cubic) and click Scale."
+                ],
+                "keywords": [
+                    "resize",
+                    "scale",
+                    "dimensions",
+                    "size"
+                ]
+            },
+            "rotate image": {
+                "steps": [
+                    "1. Go to Image → Transform → Rotate 90° clockwise/counter‑clockwise or 180°.",
+                    "2. Alternatively, choose Tools → Transform Tools → Rotate for a free rotation and enter a specific angle.",
+                    "3. Click Rotate to apply the rotation."
+                ],
+                "keywords": [
+                    "rotate",
+                    "angle",
+                    "turn",
+                    "orientation"
+                ]
+            },
+            "add text": {
+                "steps": [
+                    "1. Select the Text Tool from the toolbox (the large 'A' icon) or press T.",
+                    "2. Click on the image where you want to add text and draw a text box.",
+                    "3. Type your text and adjust font, size, and color from the Tool Options dock.",
+                    "4. Use the Move Tool to reposition the text layer if needed."
+                ],
+                "keywords": [
+                    "text",
+                    "type",
+                    "font",
+                    "letter"
+                ]
+            },
+            "apply gaussian blur": {
+                "steps": [
+                    "1. Ensure the layer you want to blur is selected in the Layers panel.",
+                    "2. Go to Filters → Blur → Gaussian Blur…",
+                    "3. Adjust the Horizontal and Vertical blur radius values to control the intensity.",
+                    "4. Click OK to apply the blur."
+                ],
+                "keywords": [
+                    "blur",
+                    "gaussian",
+                    "soften",
+                    "filter"
+                ]
+            },
+            "trim video segment": {
+                "steps": [
+                    "1. Open the video file in GIMP as an image sequence (File → Open as Layers and select the video; GIMP will import frames).",
+                    "2. In the Layers panel, select and delete frames outside of your desired range (e.g., delete frames before the 2nd second and after the 4th second).",
+                    "3. To export the trimmed segment as a video or animated GIF, go to File → Export As and choose an appropriate format (e.g., GIF for animations).",
+                    "4. Set animation parameters (frame delay) if exporting as GIF and click Export."
+                ],
+                "keywords": [
+                    "trim video",
+                    "cut segment",
+                    "frames",
+                    "layers"
+                ]
+            },
+            "convert to grayscale": {
+                "steps": [
+                    "1. Open your image in GIMP.",
+                    "2. Go to Image → Mode → Grayscale.",
+                    "3. The image will convert to shades of gray; you can undo (Ctrl+Z) to revert.",
+                    "4. Save or export the grayscale image as needed."
+                ],
+                "keywords": [
+                    "grayscale",
+                    "black and white",
+                    "desaturate",
+                    "mode"
+                ]
+            },
+            "remove background": {
+                "steps": [
+                    "1. Open the image and add an Alpha Channel via Layer → Transparency → Add Alpha Channel.",
+                    "2. Use the Fuzzy Select Tool or Select by Color Tool to select the background area.",
+                    "3. Press Delete to remove the selected background; transparent checkerboard appears.",
+                    "4. Use Eraser or refine selection if needed and export as PNG to preserve transparency."
+                ],
+                "keywords": [
+                    "remove background",
+                    "transparent",
+                    "alpha channel",
+                    "cut out",
+                    "background",
+                    "Alpha"
+                ]
+            },
+            "create gif": {
+                "steps": [
+                    "1. Prepare each frame of your animation as a separate layer (File → Open as Layers for multiple images).",
+                    "2. Ensure layers are in the correct order from bottom (first frame) to top (last frame).",
+                    "3. Go to File → Export As and choose a .gif file extension.",
+                    "4. In the Export dialog, check 'As animation' and set frame delay and looping options.",
+                    "5. Click Export to generate the animated GIF."
+                ],
+                "keywords": [
+                    "GIF",
+                    "animation",
+                    "frames",
+                    "layers"
+                ]
+            }
+        }
+    },
+    "vscode": {
+        "name": "Visual Studio Code",
+        "general_tips": [
+            "Press Ctrl+Shift+P to open the Command Palette for quick commands.",
+            "Type '>' in the Command Palette for built‑in commands or '@' to search symbols in the current file.",
+            "Ctrl+, opens the Settings UI; you can search settings by keyword.",
+            "Ctrl+` opens an integrated terminal; use multiple terminals via the dropdown next to the plus icon.",
+            "Use workspaces (File → Add Folder to Workspace) to manage multiple project folders."
+        ],
+        "specific_knowledge": {
+            "change settings": {
+                "steps": [
+                    "1. Open VS Code.",
+                    "2. Press Ctrl+Shift+P to open the Command Palette.",
+                    "3. Type 'Preferences: Open Settings (UI)' and press Enter.",
+                    "4. Use the search bar in the Settings UI to find the setting you want to change and modify it."
+                ],
+                "keywords": [
+                    "settings",
+                    "preferences",
+                    "configuration",
+                    "option"
+                ]
+            },
+            "install extension": {
+                "steps": [
+                    "1. Press Ctrl+Shift+X to open the Extensions view.",
+                    "2. In the search box, type the name or keywords of the extension you want.",
+                    "3. Click Install next to the extension in the results list.",
+                    "4. Once installed, you may need to reload VS Code to activate it."
+                ],
+                "keywords": [
+                    "extension",
+                    "plugin",
+                    "marketplace",
+                    "install"
+                ]
+            },
+            "change theme": {
+                "steps": [
+                    "1. Press Ctrl+K followed by Ctrl+T to open the theme picker.",
+                    "2. Scroll through the list and select a color theme you like.",
+                    "3. The theme changes immediately; you can preview and select as needed."
+                ],
+                "keywords": [
+                    "theme",
+                    "color scheme",
+                    "dark mode",
+                    "light mode"
+                ]
+            },
+            "search across files": {
+                "steps": [
+                    "1. Press Ctrl+Shift+F to open the Search view.",
+                    "2. Enter the text you want to find across your project.",
+                    "3. Click the Enter key; results appear in the panel.",
+                    "4. Click a result to open the file at the matching line."
+                ],
+                "keywords": [
+                    "search",
+                    "find",
+                    "global",
+                    "files"
+                ]
+            },
+            "comment code": {
+                "steps": [
+                    "1. Place the cursor on the line you want to comment.",
+                    "2. Press Ctrl+/ to toggle a single‑line comment.",
+                    "3. Select multiple lines and press Ctrl+/ to comment or uncomment them.",
+                    "4. For block comments in some languages (e.g., HTML, CSS), press Shift+Alt+A."
+                ],
+                "keywords": [
+                    "comment",
+                    "uncomment",
+                    "toggle",
+                    "remarks"
+                ]
+            },
+            "format document": {
+                "steps": [
+                    "1. Open the file you want to format.",
+                    "2. Press Shift+Alt+F to format the document according to the default or selected formatter.",
+                    "3. Ensure you have a formatter extension installed (e.g., Prettier, Black)."
+                ],
+                "keywords": [
+                    "format",
+                    "indent",
+                    "auto format",
+                    "beautify"
+                ]
+            },
+            "remove keybinding": {
+                "steps": [
+                    "1. Open the Command Palette (Ctrl+Shift+P).",
+                    "2. Type 'Preferences: Open Keyboard Shortcuts (JSON)' and press Enter to open keybindings.json.",
+                    "3. Add a rule object with the command to remove, prefixed with a minus sign; for example: { \"key\": \"ctrl+f\", \"command\": \"-list.find\" } to unassign Ctrl+F from the Tree view find command.",
+                    "4. Save the file; the keybinding is removed."
+                ],
+                "keywords": [
+                    "remove keybinding",
+                    "keyboard shortcuts",
+                    "ctrl+f",
+                    "unassign"
+                ]
+            },
+            "hide __pycache__ folders": {
+                "steps": [
+                    "1. Open Settings (Ctrl+,).",
+                    "2. In the search box, type 'files.exclude'.",
+                    "3. Click 'Edit in settings.json' to open settings.json for modifications.",
+                    "4. Add an entry under \"files.exclude\": \"**/__pycache__\": true and save the file.",
+                    "5. __pycache__ directories will now be hidden from the Explorer."
+                ],
+                "keywords": [
+                    "__pycache__",
+                    "files.exclude",
+                    "hide folders",
+                    "explorer"
+                ]
+            },
+            "enable autosave after delay": {
+                "steps": [
+                    "1. Open Settings (Ctrl+,).",
+                    "2. Search for 'auto save' in the settings search bar.",
+                    "3. Change 'Files: Auto Save' to 'afterDelay'.",
+                    "4. Set 'Files: Auto Save Delay' to the desired milliseconds (e.g., 500).",
+                    "5. Files will auto save after the specified delay."
+                ],
+                "keywords": [
+                    "auto save",
+                    "after delay",
+                    "save automatically",
+                    "files.autoSave"
+                ]
+            },
+            "open folder": {
+                "steps": [
+                    "1. Click File → Open Folder… (or press Ctrl+K then Ctrl+O).",
+                    "2. Browse to the project directory you want to open and click Select Folder.",
+                    "3. VS Code loads the folder and displays its contents in the Explorer pane."
+                ],
+                "keywords": [
+                    "open folder",
+                    "project",
+                    "directory",
+                    "workspace"
+                ]
+            },
+            "replace text": {
+                "steps": [
+                    "1. Press Ctrl+H to open the Replace tab in the Search view.",
+                    "2. In the 'Find' field, enter the text to search for; in 'Replace' field, enter the replacement text.",
+                    "3. Click 'Replace All' or use the Replace icons next to each result to selectively replace.",
+                    "4. Use the .* (regex) button to enable regular expression mode if needed."
+                ],
+                "keywords": [
+                    "replace",
+                    "find and replace",
+                    "search",
+                    "substitute"
+                ]
+            },
+            "save project as workspace": {
+                "steps": [
+                    "1. With your project folder open, go to File → Save Workspace As….",
+                    "2. Choose a location and file name with the .code-workspace extension.",
+                    "3. Click Save; a workspace file is created that references your folders and settings."
+                ],
+                "keywords": [
+                    "workspace",
+                    "save as",
+                    "project file",
+                    "code-workspace"
+                ]
+            },
+            "add folder to workspace": {
+                "steps": [
+                    "1. With a workspace open, go to File → Add Folder to Workspace….",
+                    "2. Browse and select the folder you want to add, then click Add.",
+                    "3. The new folder appears in the Explorer under the workspace; you can add multiple folders.",
+                    "4. Save the workspace to persist changes."
+                ],
+                "keywords": [
+                    "add folder",
+                    "multi-root workspace",
+                    "explorer",
+                    "workspace"
+                ]
+            },
+            "indent lines": {
+                "steps": [
+                    "1. Select the line or block of code you want to indent.",
+                    "2. Press Tab to indent right or Shift+Tab to indent left (outdent).",
+                    "3. To indent by a specific number of spaces, set 'Editor: Tab Size' in Settings.",
+                    "4. For multiple lines, highlight them all before pressing Tab."
+                ],
+                "keywords": [
+                    "indent",
+                    "outdent",
+                    "tab",
+                    "shift+tab"
+                ]
+            },
+            "install extension from vsix": {
+                "steps": [
+                    "1. Download the .vsix extension file to your computer.",
+                    "2. Open the Extensions view (Ctrl+Shift+X).",
+                    "3. Click the three dots (More Actions) and select 'Install from VSIX...'.",
+                    "4. Browse to the .vsix file and click Open.",
+                    "5. VS Code installs the extension; reload if prompted."
+                ],
+                "keywords": [
+                    "install from vsix",
+                    "extensions",
+                    "offline install",
+                    "vsix file"
+                ]
+            }
+        }
+    },
+    "thunderbird": {
+        "name": "Mozilla Thunderbird",
+        "general_tips": [
+            "Account Settings can be accessed by right‑clicking on an account name in the folder pane and selecting 'Settings'.",
+            "The Address Book (Ctrl+Shift+B) manages contacts and mailing lists.",
+            "You can drag and drop messages into folders to organize them.",
+            "Use Add‑ons and Themes (Ctrl+Shift+A) to extend Thunderbird’s functionality.",
+            "Press F5 or click Get Messages to manually check for new mail."
+        ],
+        "specific_knowledge": {
+            "add account": {
+                "steps": [
+                    "1. Open Thunderbird.",
+                    "2. Go to Account Settings (right‑click an account → Settings).",
+                    "3. Click Account Actions → Add Mail Account.",
+                    "4. Enter your name, email address and password.",
+                    "5. Click Continue and let Thunderbird attempt to find server settings, then click Done."
+                ],
+                "keywords": [
+                    "account",
+                    "email",
+                    "add",
+                    "setup",
+                    "outlook"
+                ]
+            },
+            "compose email": {
+                "steps": [
+                    "1. Click the Write button in the toolbar or press Ctrl+N.",
+                    "2. Enter the recipient’s email address in the To field, add a subject and compose your message.",
+                    "3. Click Send to deliver the email.",
+                    "4. Use Attach (paperclip icon) to add files to your email if needed."
+                ],
+                "keywords": [
+                    "compose",
+                    "new mail",
+                    "write",
+                    "send"
+                ]
+            },
+            "add signature": {
+                "steps": [
+                    "1. Go to Account Settings for the desired account.",
+                    "2. Under the account name, select 'Signature text' and type your desired signature, or choose 'Attach the signature from a file'.",
+                    "3. Check 'Use HTML' if your signature contains formatting or images.",
+                    "4. Click OK to save the signature."
+                ],
+                "keywords": [
+                    "signature",
+                    "footer",
+                    "email sign",
+                    "auto"
+                ],
+                "checkbox_name": "Signature text"
+            },
+            "create folder": {
+                "steps": [
+                    "1. Right‑click your account name or an existing folder in the folder pane.",
+                    "2. Choose 'New Folder…'.",
+                    "3. Enter a name for the folder and select its parent location.",
+                    "4. Click Create Folder."
+                ],
+                "keywords": [
+                    "folder",
+                    "mailbox",
+                    "organize",
+                    "new folder"
+                ]
+            },
+            "filter emails": {
+                "steps": [
+                    "1. Go to Tools → Message Filters…",
+                    "2. Click New to create a new filter.",
+                    "3. Provide a filter name, choose the account and set matching criteria (e.g., From contains 'newsletter').",
+                    "4. Add one or more actions (move to folder, tag, mark as read).",
+                    "5. Click OK, then Run Now to apply the filter."
+                ],
+                "keywords": [
+                    "filter",
+                    "rules",
+                    "sort",
+                    "message"
+                ]
+            },
+            "move discount emails to folder": {
+                "steps": [
+                    "1. Create the target folder by right‑clicking the account and choosing New Folder…, entering a name such as 'Discounts'.",
+                    "2. Go to Tools → Message Filters….",
+                    "3. Click New and give the filter a name (e.g., Move Discount Emails).",
+                    "4. Set the condition: Subject contains 'discount' (case‑insensitive).",
+                    "5. Set the action: Move Message to the 'Discounts' folder.",
+                    "6. Click OK and ensure the filter is enabled; click Run Now to process existing messages."
+                ],
+                "keywords": [
+                    "discount",
+                    "filter",
+                    "subject",
+                    "move",
+                    "folder"
+                ]
+            },
+            "attach file to email": {
+                "steps": [
+                    "1. Click Write or press Ctrl+N to compose a new email.",
+                    "2. Fill in the recipient, subject and message body.",
+                    "3. Click the Attach button (paperclip icon) and select File….",
+                    "4. Browse to the file (e.g., a PDF), select it and click Open.",
+                    "5. The file appears in the Attachments pane; click Send when ready."
+                ],
+                "keywords": [
+                    "attachment",
+                    "attach file",
+                    "paperclip",
+                    "email"
+                ]
+            },
+            "set up outlook account": {
+                "steps": [
+                    "1. In Thunderbird, go to Account Settings → Account Actions → Add Mail Account.",
+                    "2. Enter your name, Outlook email address and password, then click Continue.",
+                    "3. Thunderbird attempts to automatically detect server settings; choose IMAP or POP and verify incoming/outgoing server details if necessary.",
+                    "4. Click Done to create the account and Thunderbird will begin syncing messages.",
+                    "5. If asked to sign in with modern authentication, follow the prompts from Outlook/Microsoft login pages."
+                ],
+                "keywords": [
+                    "Outlook",
+                    "add account",
+                    "IMAP",
+                    "POP",
+                    "setup"
+                ]
+            },
+            "forward emails via filter": {
+                "steps": [
+                    "1. Obtain the forwarding address you want to send messages to (e.g., your Gmail address).",
+                    "2. Open Tools → Message Filters… and click New.",
+                    "3. Name the filter (e.g., Forward to Gmail).",
+                    "4. Set conditions (e.g., For all messages or specific criteria).",
+                    "5. Under 'Perform these actions', choose 'Forward Message to' and enter the forwarding address.",
+                    "6. Click OK and ensure the filter is active; messages matching the criteria will be forwarded automatically."
+                ],
+                "keywords": [
+                    "forward",
+                    "filter",
+                    "rule",
+                    "forwarding address",
+                    "gmail"
+                ]
+            }
+        }
+    },
+    "libreoffice_impress": {
+        "name": "LibreOffice Impress",
+        "general_tips": [
+            "Use the left slide pane to navigate, reorder or duplicate slides by right‑clicking on a slide thumbnail.",
+            "Insert new slides via Slide → New Slide or press Ctrl+M.",
+            "Right‑click on objects to access context‑sensitive formatting options.",
+            "Save presentations frequently with Ctrl+S and enable auto‑save under Tools → Options → Load/Save.",
+            "Run your slide show via Slide Show → Start from First Slide or press F5."
+        ],
+        "specific_knowledge": {
+            "change font style": {
+                "steps": [
+                    "1. Select the text box or highlight the text you want to change.",
+                    "2. Go to Format → Character…",
+                    "3. In the Font tab, select the desired font family (e.g., Times New Roman) and size.",
+                    "4. Click OK to apply the changes."
+                ],
+                "keywords": [
+                    "font",
+                    "style",
+                    "change",
+                    "typeface",
+                    "times new roman"
+                ]
+            },
+            "change text color": {
+                "steps": [
+                    "1. Click into the text box and select the text whose color you want to change.",
+                    "2. Go to Format → Character… and open the Font Effects tab.",
+                    "3. Choose a color from the Font Color drop‑down menu (e.g., yellow, red, green).",
+                    "4. Click OK to apply."
+                ],
+                "keywords": [
+                    "text color",
+                    "font color",
+                    "yellow",
+                    "red",
+                    "green"
+                ]
+            },
+            "duplicate slide": {
+                "steps": [
+                    "1. In the Slides pane, right‑click the slide you want to duplicate.",
+                    "2. Choose 'Duplicate Slide'.",
+                    "3. The duplicate appears after the selected slide; drag it to a new position if needed."
+                ],
+                "keywords": [
+                    "duplicate",
+                    "copy slide",
+                    "clone",
+                    "slides pane"
+                ]
+            },
+            "go to slide": {
+                "steps": [
+                    "1. Click on the desired slide thumbnail in the left Slides pane to navigate to it.",
+                    "2. Alternatively, press Page Up/Page Down to move to the previous or next slide.",
+                    "3. Use the Navigator (F5) and choose Slide to jump directly to a particular slide by number."
+                ],
+                "keywords": [
+                    "navigate",
+                    "jump",
+                    "select",
+                    "slide"
+                ]
+            },
+            "insert image": {
+                "steps": [
+                    "1. Go to Insert → Image…",
+                    "2. Browse and select the image file you want to add.",
+                    "3. Click Open; the image appears on the current slide.",
+                    "4. Drag the handles to resize or reposition the image."
+                ],
+                "keywords": [
+                    "insert image",
+                    "picture",
+                    "photo",
+                    "graphic"
+                ]
+            },
+            "set background color": {
+                "steps": [
+                    "1. Go to Format → Slide Properties…",
+                    "2. In the Background tab, choose Color from the drop‑down menu.",
+                    "3. Select the desired color or click More Colors for custom values.",
+                    "4. Choose to apply the background to the selected slide or all slides and click OK."
+                ],
+                "keywords": [
+                    "background",
+                    "slide color",
+                    "fill",
+                    "theme"
+                ]
+            },
+            "export slide to image": {
+                "steps": [
+                    "1. Choose File → Export…",
+                    "2. In the file type drop‑down, select an image format such as PNG or JPEG.",
+                    "3. If you want only the current slide, tick 'Selection'; otherwise, all slides will export as separate images.",
+                    "4. Set a filename and click Save."
+                ],
+                "keywords": [
+                    "export",
+                    "image",
+                    "png",
+                    "jpeg",
+                    "slide"
+                ]
+            },
+            "change slide orientation": {
+                "steps": [
+                    "1. Go to Slide → Properties… or Page Setup depending on your version.",
+                    "2. In the Page tab, select either Landscape or Portrait orientation.",
+                    "3. Click OK; all slides will adjust to the new orientation."
+                ],
+                "keywords": [
+                    "orientation",
+                    "landscape",
+                    "portrait",
+                    "page setup"
+                ]
+            },
+            "configure auto save": {
+                "steps": [
+                    "1. Open Tools → Options…",
+                    "2. Navigate to Load/Save → General.",
+                    "3. Check 'Save AutoRecovery information every' and set a time interval in minutes.",
+                    "4. Click OK to enable automatic saving of your presentation."
+                ],
+                "keywords": [
+                    "auto save",
+                    "recover",
+                    "backup",
+                    "options"
+                ]
+            },
+            "set slide number color": {
+                "steps": [
+                    "1. Go to Insert → Slide Number… to enable slide numbers if they aren’t already shown.",
+                    "2. Right‑click the slide number text box on the master slide (View → Master Slide) and choose Character…",
+                    "3. In the Font Effects tab, choose a color (e.g., red, green, blue) for slide numbers.",
+                    "4. Close the master view to return to your presentation."
+                ],
+                "keywords": [
+                    "slide number",
+                    "page number",
+                    "color",
+                    "master slide"
+                ]
+            }
+        }
+    },
+    "system": {
+        "name": "Linux Terminal / System Administration",
+        "general_tips": [
+            "Use 'man <command>' to read the manual page for any command.",
+            "Pipe output with '|' to chain commands (e.g., 'ls | grep txt').",
+            "Use 'sudo' for commands requiring root privileges.",
+            "Ctrl+C interrupts a running command; Ctrl+Z suspends it.",
+            "Use 'history' to view previous commands and '!n' to re-run command number n."
+        ],
+        "specific_knowledge": {
+            "monitor cpu processes": {
+                "steps": [
+                    "1. Open a terminal.",
+                    "2. Run 'top -b -d 1 -n 5' to capture 5 snapshots of CPU usage at 1-second intervals in batch mode.",
+                    "3. Redirect output to a file, e.g., 'top -b -d 1 -n 5 > /home/user/top_log.txt'.",
+                    "4. Use 'less' or 'cat' to view the log file."
+                ],
+                "keywords": [
+                    "cpu",
+                    "top",
+                    "monitor",
+                    "process",
+                    "log"
+                ]
+            },
+            "fix broken symbolic link": {
+                "steps": [
+                    "1. Navigate to the directory containing the symlink.",
+                    "2. Run 'ls -l' to identify broken links (they appear red or with 'No such file').",
+                    "3. Remove the broken link with 'rm <linkname>'.",
+                    "4. Recreate the symlink with 'ln -s /path/to/target <linkname>'.",
+                    "5. Verify with 'ls -l <linkname>'."
+                ],
+                "keywords": [
+                    "symlink",
+                    "symbolic link",
+                    "broken",
+                    "ln",
+                    "fix"
+                ]
+            },
+            "find largest files": {
+                "steps": [
+                    "1. Use 'find /path -type f -printf \"%s\\t%p\\n\"' to list files with sizes.",
+                    "2. Pipe to 'sort -nr' to sort by size descending.",
+                    "3. Use 'head -n 5' to take the top 5 largest.",
+                    "4. Optionally use 'numfmt --to=iec' to format sizes as human-readable.",
+                    "5. Redirect to a file, e.g., '> top5.txt'."
+                ],
+                "keywords": [
+                    "find",
+                    "largest",
+                    "files",
+                    "size",
+                    "sort",
+                    "top"
+                ]
+            },
+            "verify sha256 checksum": {
+                "steps": [
+                    "1. Navigate to the directory containing the file.",
+                    "2. Run 'sha256sum <filename>' to compute the checksum.",
+                    "3. Compare the output with the expected checksum.",
+                    "4. If checksums match, the file is verified; otherwise, it may be corrupted.",
+                    "5. Use shell scripting to automate: 'if [ \"$ACTUAL\" = \"$EXPECTED\" ]; then ... fi'."
+                ],
+                "keywords": [
+                    "sha256",
+                    "checksum",
+                    "verify",
+                    "hash",
+                    "integrity"
+                ]
+            }
+        }
+    },
+    "audacity": {
+        "name": "Audacity Audio Editor",
+        "general_tips": [
+            "Use Ctrl+Shift+N to create a new stereo track.",
+            "Press R to start recording, Space to play/pause.",
+            "Ctrl+Z to undo, Ctrl+Shift+Z to redo.",
+            "Export via File → Export → Export as MP3/WAV."
+        ],
+        "specific_knowledge": {
+            "record and trim audio": {
+                "steps": [
+                    "1. Open GNOME Sound Recorder and record your audio clip, saving as .wav.",
+                    "2. Open Audacity and go to File → Open to load the .wav file.",
+                    "3. Select the portion of audio you want to trim (e.g., first 2 seconds of silence).",
+                    "4. Press Delete to remove the selected portion.",
+                    "5. Go to File → Export → Export as MP3.",
+                    "6. Choose the destination path and click Save."
+                ],
+                "keywords": [
+                    "record",
+                    "trim",
+                    "audio",
+                    "mp3",
+                    "audacity",
+                    "silence"
+                ]
+            },
+            "export audio as mp3": {
+                "steps": [
+                    "1. Open the audio file in Audacity.",
+                    "2. Go to File → Export → Export as MP3.",
+                    "3. Choose a filename and location.",
+                    "4. Configure MP3 options (bitrate, quality) if needed.",
+                    "5. Click Save to export."
+                ],
+                "keywords": [
+                    "export",
+                    "mp3",
+                    "audio",
+                    "save"
+                ]
+            }
+        }
+    },
+    "typora": {
+        "name": "Typora Markdown Editor",
+        "general_tips": [
+            "Typora renders Markdown in real-time as you type.",
+            "Use File → Export to convert to PDF, HTML, or other formats.",
+            "Ctrl+/ toggles source code view."
+        ],
+        "specific_knowledge": {
+            "export markdown to pdf": {
+                "steps": [
+                    "1. Open Typora and open the Markdown file (e.g., notes.md).",
+                    "2. Go to File → Export → PDF.",
+                    "3. Choose the destination path and filename.",
+                    "4. Click Save to export the PDF."
+                ],
+                "keywords": [
+                    "markdown",
+                    "pdf",
+                    "export",
+                    "typora",
+                    "convert"
+                ]
+            }
+        }
+    },
+    "pdfarranger": {
+        "name": "PDF Arranger",
+        "general_tips": [
+            "Drag and drop PDF files into the window to add them.",
+            "Reorder pages by dragging thumbnails.",
+            "Use File → Save As to save the merged/arranged PDF."
+        ],
+        "specific_knowledge": {
+            "merge pdfs": {
+                "steps": [
+                    "1. Open PDF Arranger.",
+                    "2. Click File → Open or drag the first PDF into the window.",
+                    "3. Click File → Import or drag additional PDFs to add more pages.",
+                    "4. Arrange pages by dragging thumbnails if needed.",
+                    "5. Go to File → Save As and choose the output path.",
+                    "6. Click Save to create the merged PDF."
+                ],
+                "keywords": [
+                    "merge",
+                    "pdf",
+                    "combine",
+                    "pdfarranger",
+                    "join"
+                ]
+            }
+        }
+    },
+    "gimagereader": {
+        "name": "gImageReader (OCR)",
+        "general_tips": [
+            "gImageReader uses Tesseract OCR engine to extract text from images.",
+            "Supports PNG, JPEG, TIFF, and PDF input files.",
+            "Use Ctrl+O to add files for OCR processing."
+        ],
+        "specific_knowledge": {
+            "extract text from image": {
+                "steps": [
+                    "1. Open gImageReader.",
+                    "2. Press Ctrl+O or go to File → Open to add an image file (e.g., note.png).",
+                    "3. Click the 'Recognize' button to run OCR.",
+                    "4. Wait for the OCR process to complete.",
+                    "5. Click 'Save' or go to File → Save Output to export the recognized text to a .txt file.",
+                    "6. Optionally, open the text file in a text editor (e.g., Gedit) to verify."
+                ],
+                "keywords": [
+                    "ocr",
+                    "text",
+                    "image",
+                    "extract",
+                    "recognize",
+                    "gimagereader"
+                ]
+            }
+        }
+    },
+    "gnome_calendar": {
+        "name": "GNOME Calendar",
+        "general_tips": [
+            "Click the '+' button to create a new event.",
+            "Events can have reminders set for minutes/hours before.",
+            "GNOME Calendar syncs with online accounts configured in Settings."
+        ],
+        "specific_knowledge": {
+            "schedule reminder": {
+                "steps": [
+                    "1. Open GNOME Calendar.",
+                    "2. Click the '+' (New Event) button.",
+                    "3. Enter the event title (e.g., 'Team Sync Meeting').",
+                    "4. Set the date and time (e.g., next Friday at 14:00).",
+                    "5. Click 'Add Reminder' and select a reminder time (e.g., 10 minutes before).",
+                    "6. Click Save to create the event.",
+                    "7. A desktop notification will appear at the reminder time."
+                ],
+                "keywords": [
+                    "calendar",
+                    "reminder",
+                    "schedule",
+                    "event",
+                    "meeting",
+                    "notification"
+                ]
+            }
+        }
+    }
+}

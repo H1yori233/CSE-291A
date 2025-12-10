@@ -1,5 +1,3 @@
-"""Benchmark script for Qwen VL client."""
-
 from __future__ import annotations
 
 import argparse

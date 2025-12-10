@@ -1,5 +1,3 @@
-"""Implementation of the Qwen-based OSWorld agent."""
-
 from __future__ import annotations
 
 import json

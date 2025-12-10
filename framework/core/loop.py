@@ -1,5 +1,3 @@
-"""High-level loop that connects the agent with an environment."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -20,8 +18,6 @@ class LoopResult:
 
 
 class AgentLoop:
-    """Minimal driver around `QwenOSWorldAgent`."""
-
     def __init__(
         self,
         agent: QwenOSWorldAgent,
