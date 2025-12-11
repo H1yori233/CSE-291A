@@ -138,201 +138,95 @@ CSE-291A/
 
 ## 🎬 Action Schema
 
-The agent supports the following actions (OSWorld-Human style):
+The agent uses a structured action space that maps to GUI operations.
 
-| Action | Description | Parameters |
-|--------|-------------|------------|
-| `CLICK` | Click at coordinates or text | `x, y` or `target_text` |
-| `MOVE` | Move mouse cursor | `x, y` |
-| `SCROLL` | Scroll up/down | `amount` |
-| `TYPE` | Type text | `arg` (text) |
-| `KEY` | Press keyboard key | `arg` (key combo) |
-| `FOCUS_APP` | Bring app to focus | `arg` (app name) |
-| `OPEN` | Open file/URL | `arg` (path/URL) |
-| `EXECUTE` | Run shell command | `arg` (command) |
-| `VERIFY_FILE` | Check file exists | `arg` (path) |
-| `WAIT` | Wait for seconds | `amount` |
+| Action | Description | Parameters (JSON) |
+|--------|-------------|-------------------|
+| `MOVE_CURSOR` | Move mouse to coordinates | `target: {type: "coordinate", x: int, y: int}` |
+| `LEFT_CLICK` | Left click at location | `target: {type: "coordinate", x: int, y: int}` |
+| `RIGHT_CLICK` | Right click at location | `target: {type: "coordinate", x: int, y: int}` |
+| `DOUBLE_CLICK` | Double click at location | `target: {type: "coordinate", x: int, y: int}` |
+| `DRAG_AND_DROP` | Drag from source to target | `source: {...}, target: {...}` |
+| `SCROLL_UP` | Scroll up | `target: {...}, scroll_amount: int` |
+| `SCROLL_DOWN` | Scroll down | `target: {...}, scroll_amount: int` |
+| `TYPE` | Type text | `text: "string"` |
+| `PRESS_KEY` | Press single key | `key: "name"` |
+| `HOTKEY` | Press key combination | `keys: ["ctrl", "c"]` |
+| `WAIT` | Wait (no op) | `metadata: {reason: "string"}` |
+| `DONE` | Task completed | - |
+| `FAIL` | Task failed | `metadata: {reason: "string"}` |
 
 ### Example Action JSON
 
 ```json
 {
+  "thought": "I will open the file explorer.",
+  "plan": "1. Click on the folder icon\n2. Wait for window",
   "actions": [
-    {"action": "FOCUS_APP", "arg": "Finder"},
-    {"action": "KEY", "arg": "cmd+n"},
-    {"action": "CLICK", "target_text": "Desktop"},
-    {"action": "TYPE", "arg": "New Folder"}
+    {
+      "action": "LEFT_CLICK", 
+      "target": {"type": "coordinate", "x": 100, "y": 200}
+    }
   ]
 }
 ```
 
-## 🔄 Switching LLM Backends
-
-### OpenAI (Default)
-
-```python
-model = create_model_client('openai', model='gpt-4-turbo-preview')
-```
-
-### Ollama (Local)
-
-```python
-model = create_model_client('ollama', model='llama3.1:8b-instruct')
-```
-
-### llama.cpp (CPU/GPU)
-
-```python
-model = create_model_client('llamacpp', model_path='models/llama.gguf')
-```
-
-### Anthropic Claude
-
-```python
-model = create_model_client('anthropic', model='claude-3-sonnet-20240229')
-```
-
-**No changes needed to the rest of the framework!** The modular design allows seamless backend swapping.
-
-## 📊 Evaluation Metrics
-
-The framework computes:
-
-- **Success Rate**: % of tasks completed successfully
-- **WES+** (Weighted Efficiency Score): Rewards completing tasks with fewer steps
-  - Formula: `(successes / total) × (1 - avg_steps_ratio)`
-- **WES-** (Weighted Penalty): Penalizes failed tasks with many steps
-  - Formula: `(failures / total) × avg_steps_ratio`
-- **Average Steps**: Mean steps taken per task
-- **Average Time**: Mean execution time per task
-- **Action Success Rate**: % of individual actions that succeeded
-
-### Running Evaluation
-
-```bash
-# Run all tasks with OpenAI
-python scripts/run_eval.py \
-  --tasks tasks \
-  --backend openai \
-  --model gpt-4-turbo-preview \
-  --max-steps 20
-
-# Run with local Ollama
-python scripts/run_eval.py \
-  --tasks tasks \
-  --backend ollama \
-  --model llama3.1:8b-instruct \
-  --max-steps 20
-
-# Run first 3 tasks only
-python scripts/run_eval.py \
-  --tasks tasks \
-  --limit 3
-```
-
-Results are saved to `results/`:
-- `evaluation_metrics.json` - Summary metrics
-- `evaluation_results.csv` - Per-task results
-- `run_*/` - Individual run logs and screenshots
-
 ## 🛠️ Advanced Usage
 
-### Custom Task
+### Using the Framework Adapter
+
+The framework is designed to plug into the OSWorld environment via `FrameworkAgentAdapter`.
 
 ```python
-from framework.core.loop import AgentLoop
-from framework.core.model_client import create_model_client
+from framework.core.agent import AgentConfig
+from framework.osworld_adapter import build_adapter
 
-# Create components
-model = create_model_client('openai', model='gpt-4-turbo-preview')
-loop = AgentLoop(
-    model_client=model,
-    verbose=True,
-    run_dir='my_custom_run',
-    action_delay=0.5,
-    ocr_engine='tesseract'
-)
-
-# Run task
-result = loop.run_task(
-    task_description="Create a file named test.txt on Desktop",
+# 1. Configure the agent
+config = AgentConfig(
     max_steps=15,
-    metadata={'custom_field': 'value'}
+    temperature=0.2,
+    max_tokens=600
 )
-```
 
-### Custom Action Execution
+# 2. Build the adapter (connects to vLLM)
+agent = build_adapter(
+    base_url="http://localhost:8000/v1/chat/completions",
+    model="Qwen/Qwen3-VL-8B-Instruct",
+    agent_config=config
+)
 
-```python
-from framework.actions.schema import Action
-from framework.actions.executor import get_executor
-
-executor = get_executor(delay=0.5)
-
-# Execute single action
-action = Action(action="CLICK", x=100, y=200)
-result = executor.execute(action)
-
-print(result['success'])
-print(result['message'])
-```
-
-### OCR with Target Text Resolution
-
-```python
-from framework.perception.capture import capture_screen
-from framework.perception.ocr import get_ocr_manager
-
-# Capture and OCR
-screenshot = capture_screen()
-ocr = get_ocr_manager(engine='tesseract')
-result = ocr.process_screenshot(screenshot, include_boxes=True)
-
-# Find text location
-coords = ocr.find_text(screenshot, "Finder", case_sensitive=False)
-if coords:
-    print(f"Found 'Finder' at: {coords}")
+# 3. Use in your loop (pseudo-code)
+# env = ... (DesktopEnv)
+# instruction = "Open Calculator"
+# obs = env.reset(instruction)
+#
+# raw_response, actions = agent.predict(instruction, obs)
+# for action in actions:
+#     env.step(action)
 ```
 
 ## 🐛 Debugging
 
 ### View Logs
 
-All runs save detailed logs:
+The agent uses standard Python logging.
 
-```bash
-# View agent log
-cat results/run_<timestamp>/agent.log
-
-# View action history
-cat results/run_<timestamp>/action_history.json
-
-# View screenshots
-open results/run_<timestamp>/screenshots/
+```python
+import logging
+logging.basicConfig(level=logging.INFO)
+# logs will appear in stdout
 ```
+
+When running via `run_framework_adapter.py`, logs are also saved to the results directory structure:
+- `agent.log`: Full debug logs from the agent.
+- `action_history.json`: Structured history of actions taken.
 
 ### Verbose Mode
 
-Enable verbose logging:
+Set logging level to DEBUG to see full prompt construction and raw model outputs:
 
 ```python
-result = run_task(
-    task_description="...",
-    model_client=model,
-    verbose=True  # Print detailed logs
-)
-```
-
-### Adjust Action Delay
-
-Slow down or speed up execution:
-
-```python
-result = run_task(
-    task_description="...",
-    model_client=model,
-    action_delay=1.0  # 1 second between actions
-)
+logging.getLogger("framework").setLevel(logging.DEBUG)
 ```
 
 ## 🔧 Configuration
@@ -340,68 +234,33 @@ result = run_task(
 ### Environment Variables
 
 ```bash
-# OpenAI
+# OpenAI (if using OpenAI backend instead of vLLM)
 export OPENAI_API_KEY="sk-..."
-
-# Anthropic
-export ANTHROPIC_API_KEY="..."
-
-# Ollama URL (if not localhost)
-# Set in code: create_model_client('ollama', base_url='http://...')
-```
-
-### OCR Engine
-
-Switch between Tesseract and PaddleOCR:
-
-```python
-# Tesseract (faster, English)
-result = run_task(..., ocr_engine='tesseract')
-
-# PaddleOCR (multilingual, better for complex layouts)
-result = run_task(..., ocr_engine='paddle')
 ```
 
 ## 📈 Performance Tips
 
-1. **Use GPU for local LLMs**: Configure Ollama/llama.cpp with GPU support
-2. **Adjust max_steps**: Lower for simple tasks, higher for complex ones
-3. **Use target_text over coordinates**: More robust to screen changes
-4. **Enable action delay**: Gives UI time to update (0.5-1.0s recommended)
-5. **Choose right OCR**: Tesseract for speed, PaddleOCR for accuracy
+1. **vLLM Optimization**: Use `launch_serving.sh` which enables `prefix-caching` and `chunked-prefill`.
+2. **Coordinate Precision**: The agent uses precise coordinate targeting. Ensure screen resolution matches the model's expected aspect ratio (usually 16:9).
+3. **Action Batching**: The model can output multiple actions in one step (e.g., move then click).
 
 ## 🧪 Testing
 
 ```bash
-# Test simple task
-python scripts/example_usage.py
-
-# Test with single task
-python scripts/run_eval.py --tasks tasks --limit 1
-
-# Test different OCR engines
-python scripts/run_eval.py --tasks tasks --ocr-engine tesseract --limit 1
-python scripts/run_eval.py --tasks tasks --ocr-engine paddle --limit 1
+# Run a quick test on a single task
+cd OSWorld
+python run_framework_adapter.py --domain onboard --limit 1 --max_steps 5
 ```
 
 ## 📝 Example Tasks
 
-The `tasks/` directory contains example task definitions in JSON format covering:
-- Application launch
-- File operations
-- Web browsing
-- Text editing
-- System navigation
-- Command line operations
+The `tasks/` directory in the repository (and OSWorld submodule) contains standard evaluation tasks.
 
 ## 🤝 Contributing
 
 To extend the framework:
-
-1. **Add new actions**: Extend `Action` schema in `framework/actions/schema.py`
-2. **Add new LLM backend**: Implement `ModelClient` in `framework/core/model_client.py`
-3. **Add new metrics**: Extend `MetricsCalculator` in `framework/eval/metrics.py`
-4. **Add new tasks**: Create JSON files in `tasks/`
+1. **New Actions**: Modify `framework/actions/schema.py` and update `_translate_action` in `framework/osworld_adapter.py`.
+2. **Prompt Engineering**: Update templates in `framework/core/prompt_builder.py`.
 
 ## 📄 License
 
