@@ -27,10 +27,12 @@ result/          # Evaluation results
 **1. Start vLLM server**
 
 ```bash
+bash setup.sh
 cd inference && bash launch_serving.sh
 ```
 
 > Modify `inference/launch_serving.sh` based on your GPU configuration.
+> There are 2 separate environments: one for vLLM deployment, one for agent. The agent runs in OSWorld's environment - no extra setup needed, just follow OSWorld's installation.
 
 **2. Move evaluation script to OSWorld**
 
