@@ -113,7 +113,7 @@ class PromptBuilder:
                 # Use prioritized format with sorting by relevance
                 last_coord = tuple(memory.last_coordinate) if memory.last_coordinate else None
                 parts.append(observation.format_a11y_prioritized(
-                    max_chars=3000,
+                    max_chars=8000,
                     next_element_hint=memory.next_element_hint,
                     last_coordinate=last_coord
                 ))
@@ -121,7 +121,7 @@ class PromptBuilder:
                            memory.next_element_hint, last_coord)
             else:
                 # Use compact format: [id]tag|name|(x,y) - stay within model context limit
-                parts.append(observation.format_a11y_compact(max_chars=3000))
+                parts.append(observation.format_a11y_compact(max_chars=8000))
         elif observation.som_elements:
             # Fallback to SoM elements
             visible = [

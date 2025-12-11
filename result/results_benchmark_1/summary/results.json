@@ -1,0 +1,114 @@
+[
+  {
+    "application": "chrome",
+    "task_id": "a728a36e-8bf1-4bb6-9a03-ef039a5233f0",
+    "status": "success",
+    "score": 1.0,
+    "timestamp": "2025-12-10 16:07:05"
+  },
+  {
+    "application": "chrome",
+    "task_id": "f3b19d1e-2d48-44e9-b4e1-defcae1a0197",
+    "status": "success",
+    "score": 1.0,
+    "timestamp": "2025-12-10 16:10:42"
+  },
+  {
+    "application": "gimp",
+    "task_id": "77b8ab4d-994f-43ac-8930-8ca087d7c4b4",
+    "status": "success",
+    "score": 0.0,
+    "timestamp": "2025-12-10 16:14:49"
+  },
+  {
+    "application": "libreoffice_calc",
+    "task_id": "3aaa4e37-dc91-482e-99af-132a612d40f3",
+    "status": "success",
+    "score": 0.0,
+    "timestamp": "2025-12-10 16:19:31"
+  },
+  {
+    "application": "libreoffice_calc",
+    "task_id": "1273e544-688f-496b-8d89-3e0f40aa0606",
+    "status": "success",
+    "score": 0.0,
+    "timestamp": "2025-12-10 16:24:20"
+  },
+  {
+    "application": "libreoffice_impress",
+    "task_id": "2cd43775-7085-45d8-89fa-9e35c0a915cf",
+    "status": "success",
+    "score": 0,
+    "timestamp": "2025-12-10 16:29:42"
+  },
+  {
+    "application": "libreoffice_writer",
+    "task_id": "4bcb1253-a636-4df4-8cb0-a35c04dfef31",
+    "status": "success",
+    "score": 0.0,
+    "timestamp": "2025-12-10 16:38:08"
+  },
+  {
+    "application": "multi_apps",
+    "task_id": "937087b6-f668-4ba6-9110-60682ee33441",
+    "status": "success",
+    "score": 0.0,
+    "timestamp": "2025-12-10 16:43:15"
+  },
+  {
+    "application": "multi_apps",
+    "task_id": "91190194-f406-4cd6-b3f9-c43fac942b22",
+    "status": "success",
+    "score": 0.0,
+    "timestamp": "2025-12-10 16:49:19"
+  },
+  {
+    "application": "os",
+    "task_id": "e0df059f-28a6-4169-924f-b9623e7184cc",
+    "status": "success",
+    "score": 1.0,
+    "timestamp": "2025-12-10 16:54:16"
+  },
+  {
+    "application": "os",
+    "task_id": "bedcedc4-4d72-425e-ad62-21960b11fe0d",
+    "status": "success",
+    "score": 0.0,
+    "timestamp": "2025-12-10 16:57:09"
+  },
+  {
+    "application": "thunderbird",
+    "task_id": "7b1e1ff9-bb85-49be-b01d-d6424be18cd0",
+    "status": "success",
+    "score": 0.0,
+    "timestamp": "2025-12-10 17:00:42"
+  },
+  {
+    "application": "vlc",
+    "task_id": "bba3381f-b5eb-4439-bd9e-80c22218d5a7",
+    "status": "success",
+    "score": 1,
+    "timestamp": "2025-12-10 17:04:46"
+  },
+  {
+    "application": "vlc",
+    "task_id": "8ba5ae7a-5ae5-4eab-9fcc-5dd4fe3abf89",
+    "status": "success",
+    "score": 0,
+    "timestamp": "2025-12-10 17:08:20"
+  },
+  {
+    "application": "vs_code",
+    "task_id": "276cc624-87ea-4f08-ab93-f770e3790175",
+    "status": "success",
+    "score": 0.0,
+    "timestamp": "2025-12-10 17:11:25"
+  },
+  {
+    "application": "vs_code",
+    "task_id": "eabc805a-bfcf-4460-b250-ac92135819f6",
+    "status": "success",
+    "score": 0.0,
+    "timestamp": "2025-12-10 17:14:44"
+  }
+]

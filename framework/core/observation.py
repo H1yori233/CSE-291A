@@ -216,14 +216,19 @@ class Observation:
             matches.sort(key=distance_to_hint)
             best_match = matches[0]
             best_distance = distance_to_hint(best_match)
-            # Use the closest match, but warn if it's far from hint
-            if best_distance < 300:  # Reasonable tolerance
-                logger.info("[DEBUG] Selected '%s' at %s (distance %d from hint %s)", 
-                           best_match.name, best_match.center(), best_distance, coord_hint)
-                return best_match.center()
+            # Always use the closest A11y element - coordinates are just a disambiguation hint
+            # Do NOT reject based on distance; trust name match over model's coordinate prediction
+            if best_distance < 100:
+                logger.info("[DEBUG] High confidence match: '%s' at %s (distance %dpx)", 
+                           best_match.name, best_match.center(), best_distance)
+            elif best_distance < 300:
+                logger.info("[DEBUG] Medium confidence match: '%s' at %s (distance %dpx from hint)",
+                           best_match.name, best_match.center(), best_distance)
             else:
-                logger.warning("[DEBUG] Best match '%s' is %d pixels from hint, may be wrong",
-                              best_match.name, best_distance)
+                # Distance is high, but still use A11y element - model's coords are likely wrong
+                logger.warning("[DEBUG] Low confidence but using A11y match: '%s' at %s (distance %dpx from hint, but trusting name match)",
+                              best_match.name, best_match.center(), best_distance)
+            return best_match.center()
         
         # If we have type hint, filter by element type
         if type_hint and len(matches) > 1:
@@ -310,7 +315,7 @@ class Observation:
         
         return "\n".join(lines)
     
-    def format_a11y_compact(self, max_chars: int = 3000, filter_containers: bool = True) -> str:
+    def format_a11y_compact(self, max_chars: int = 8000, filter_containers: bool = True) -> str:
         """Ultra-compact format with char limit instead of element count.
         Format: [id]tag|name|(x,y) per line. Model outputs element_id."""
         if not self.a11y_elements:
@@ -336,7 +341,7 @@ class Observation:
     
     def format_a11y_prioritized(
         self, 
-        max_chars: int = 3000, 
+        max_chars: int = 8000, 
         filter_containers: bool = True,
         next_element_hint: Optional[str] = None,
         last_coordinate: Optional[Tuple[int, int]] = None

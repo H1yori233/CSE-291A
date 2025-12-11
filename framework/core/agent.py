@@ -75,6 +75,21 @@ class QwenOSWorldAgent:
             self.plan.update_from_text(self._plan_task(self._task_instruction))
 
         self._step += 1
+        
+        # LOOP BREAKER: Check loop severity BEFORE calling model
+        loop_severity = self.memory.get_loop_severity()
+        if loop_severity >= 3:
+            logger.warning("[LOOP BREAKER] Fatal loop detected (severity: %d), forcing alternative action", loop_severity)
+            from framework.actions import ActionType
+            alternative_action = self._get_loop_breaker_action()
+            self.memory.note_actions(self._step, [alternative_action])
+            return AgentStepOutput(
+                raw_response="[LOOP BREAKER: Forced alternative action due to repeated failures]",
+                payload={"thought": "loop_breaker_triggered", "plan": "break_loop", "actions": []},
+                actions=ActionBatch(actions=[]),
+                grounded_actions=[alternative_action],
+            )
+        
         plan_text = self.plan.as_prompt()
         history = self.memory.recent_summary()
         messages = self.prompts.step_messages(
@@ -191,3 +206,28 @@ class QwenOSWorldAgent:
         if missing:
             raise ValueError(f"Model response missing keys: {missing}")
         return data
+
+    def _get_loop_breaker_action(self) -> GroundedAction:
+        """Generate an alternative action when stuck in a loop.
+        
+        Strategies (cycled based on loop count):
+        1. Press Escape to dismiss overlays/dialogs
+        2. Scroll down to reveal new elements
+        3. Press Tab to move focus
+        """
+        from framework.actions import ActionType
+        
+        strategy = self.memory.loop_count % 3
+        
+        if strategy == 0:
+            # Strategy 1: Press Escape to dismiss overlays
+            logger.info("[LOOP BREAKER] Strategy: Press Escape to dismiss potential overlay")
+            return GroundedAction(action=ActionType.PRESS_KEY, key="escape")
+        elif strategy == 1:
+            # Strategy 2: Scroll down to reveal new elements
+            logger.info("[LOOP BREAKER] Strategy: Scroll down to reveal hidden elements")
+            return GroundedAction(action=ActionType.SCROLL_DOWN, scroll_amount=300)
+        else:
+            # Strategy 3: Press Tab to change focus
+            logger.info("[LOOP BREAKER] Strategy: Press Tab to change focus")
+            return GroundedAction(action=ActionType.PRESS_KEY, key="tab")

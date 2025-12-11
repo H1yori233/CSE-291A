@@ -30,6 +30,8 @@ class AgentMemory:
     next_element_hint: Optional[str] = None
     # Coordinate of the last click action (for spatial proximity sorting)
     last_coordinate: Optional[List[int]] = None
+    # Loop severity tracking for forced loop breaker
+    loop_count: int = 0
 
 
     def note_actions(self, step: int, actions: Sequence[GroundedAction]):
@@ -57,6 +59,21 @@ class AgentMemory:
         self.next_element_hint = hint
         if hint:
             logger.info("[DEBUG] Next element hint set: %s", hint)
+
+    def get_loop_severity(self) -> int:
+        """Return loop severity: 0=none, 1=mild, 2=severe, 3=fatal.
+        
+        Used by the loop breaker mechanism to force alternative actions.
+        """
+        loop_warning = self.detect_loop()
+        if not loop_warning:
+            self.loop_count = 0
+            return 0
+        self.loop_count += 1
+        severity = min(self.loop_count, 3)
+        logger.warning("[LOOP SEVERITY] Level %d detected (consecutive loops: %d)", 
+                      severity, self.loop_count)
+        return severity
 
 
     def recent_summary(self) -> str:
