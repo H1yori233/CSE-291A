@@ -1,10 +1,7 @@
 import json
 import os
-import logging
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
-
-logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -25,11 +22,9 @@ class KnowledgeRetriever:
         self.domain_config: Dict[str, Any] = {}
         self.rag_system = None
         
-        # Load structured domain knowledge
         if domain_config_path and os.path.exists(domain_config_path):
             self._load_domain_config(domain_config_path)
         
-        # Initialize RAG if path provided
         if rag_knowledge_path and os.path.exists(rag_knowledge_path):
             self._init_rag(rag_knowledge_path)
     
@@ -37,20 +32,18 @@ class KnowledgeRetriever:
         try:
             with open(path, 'r', encoding='utf-8') as f:
                 self.domain_config = json.load(f)
-            logger.info(f"Loaded domain config with {len(self.domain_config)} domains")
-        except Exception as e:
-            logger.error(f"Failed to load domain config: {e}")
+        except Exception:
+            pass
     
     def _init_rag(self, rag_path: str):
         try:
             from .domain_rag import DomainRAG
             self.rag_system = DomainRAG()
             self.rag_system.load_knowledge_base(rag_path)
-            logger.info("RAG system initialized successfully")
         except ImportError:
-            logger.info("DomainRAG not available, using structured knowledge only")
-        except Exception as e:
-            logger.info(f"RAG initialization skipped: {e}")
+            pass
+        except Exception:
+            pass
     
     def detect_domain(self, task: str, a11y_elements: Optional[List[str]] = None) -> str:
         text = task.lower()
@@ -67,7 +60,6 @@ class KnowledgeRetriever:
             "vscode": ["vscode", "vs code", "visual studio code", "code editor", "__pycache__", "pycache", "extension", "theme", "keybinding", "autosave", "merge conflict", "git conflict"],
             "thunderbird": ["thunderbird", "email client", "mail account", "email filter", "signature", "compose email", "email folder"],
             "files": ["nautilus", "file manager", "trash"],
-            # New domains for custom tasks
             "system": ["terminal", "command line", "cli", "bash", "top", "cpu", "symlink", "symbolic link", "sha256", "checksum", "find files", "largest files"],
             "audacity": ["audacity", "audio edit", "trim audio", "record audio", "mp3", "wav", "sound"],
             "typora": ["typora", "markdown", "md file", "export md"],
@@ -76,7 +68,6 @@ class KnowledgeRetriever:
             "gnome_calendar": ["gnome calendar", "calendar", "schedule", "reminder", "event", "meeting"],
         }
         
-        # Score each domain
         scores = {}
         for domain, patterns in domain_patterns.items():
             score = sum(pattern in text for pattern in patterns)
@@ -102,23 +93,19 @@ class KnowledgeRetriever:
         for topic, knowledge in specific.items():
             keywords = knowledge.get("keywords", [])
             
-            # Score 1: Match against keywords list
             matched_keywords = sum(1 for kw in keywords if kw.lower() in task_lower)
             keyword_score = matched_keywords / len(keywords) if keywords else 0
             
-            # Score 2: Match against topic name (e.g., "add header or footer")
             topic_words = set(topic.lower().split())
             topic_match = len(task_words & topic_words) / len(topic_words) if topic_words else 0
             
-            # Combined score: weighted average
             score = 0.6 * keyword_score + 0.4 * topic_match
             
-            # Bonus for exact topic substring match
             if topic.lower() in task_lower or any(w in topic.lower() for w in task_words if len(w) > 3):
                 score += 0.2
             
             if score > best_score:
-                best_score = min(score, 1.0)  # Cap at 1.0
+                best_score = min(score, 1.0)
                 best_match = knowledge
         
         return best_match, best_score
@@ -133,29 +120,22 @@ class KnowledgeRetriever:
         if domain is None:
             domain = self.detect_domain(task)
         
-        logger.info(f"Retrieving knowledge for domain: {domain}")
-        
         general_tips = []
         specific_steps = []
         rag_solutions = []
         confidence = 0.0
         
-        # 1. Get structured domain knowledge
         if domain in self.domain_config:
             domain_knowledge = self.domain_config[domain]
             
-            # General tips
             if include_general_tips:
                 general_tips = domain_knowledge.get("general_tips", [])
             
-            # Specific knowledge matching
             matched, match_confidence = self._match_specific_knowledge(task, domain_knowledge)
             if matched:
                 specific_steps = matched.get("steps", [])
                 confidence = max(confidence, match_confidence)
-                logger.info(f"Found specific knowledge match with confidence: {match_confidence:.2f}")
         
-        # 2. RAG-based retrieval for additional context
         if self.rag_system:
             try:
                 rag_results = self.rag_system.query(
@@ -166,13 +146,11 @@ class KnowledgeRetriever:
                 )
                 rag_solutions = rag_results
                 
-                # Update confidence based on RAG results
                 if rag_results:
                     rag_confidence = max(r.get("similarity", 0) for r in rag_results)
                     confidence = max(confidence, rag_confidence)
-                    logger.info(f"RAG returned {len(rag_results)} results, best similarity: {rag_confidence:.2f}")
-            except Exception as e:
-                logger.warning(f"RAG retrieval failed: {e}")
+            except Exception:
+                pass
         
         return RetrievedKnowledge(
             domain=domain,
@@ -195,15 +173,13 @@ class KnowledgeRetriever:
         lines.append(f"\n## {domain_name} Tips:")
         current_length += len(lines[-1])
         
-        # Add general tips
         if knowledge.general_tips:
             lines.append("\n### General Tips:")
-            for tip in knowledge.general_tips[:3]:  # Limit to 3 tips
+            for tip in knowledge.general_tips[:3]:
                 if current_length + len(tip) < max_length:
                     lines.append(f"- {tip}")
                     current_length += len(tip)
         
-        # Add specific steps (highest priority)
         if knowledge.specific_steps:
             lines.append("\n### Specific Steps for This Task:")
             for step in knowledge.specific_steps:
@@ -211,7 +187,6 @@ class KnowledgeRetriever:
                     lines.append(step)
                     current_length += len(step)
         
-        # Add RAG solutions
         if include_rag_solutions and knowledge.rag_solutions:
             lines.append("\n### Similar Task Reference:")
             for i, solution in enumerate(knowledge.rag_solutions[:2], 1):
@@ -234,18 +209,17 @@ class KnowledgeRetriever:
         knowledge = self.retrieve(task, domain=domain)
         
         if knowledge.confidence < 0.1 and not knowledge.general_tips:
-            return ""  # No relevant knowledge found
+            return ""
         
         return self.format_hints(knowledge, max_length=max_length)
 
 
-# Factory function
 def create_knowledge_retriever(
     framework_root: Optional[str] = None
 ) -> KnowledgeRetriever:
     if framework_root is None:
-        current_dir = os.path.dirname(os.path.abspath(__file__))  # framework/core
-        framework_root = os.path.dirname(current_dir)  # framework/
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        framework_root = os.path.dirname(current_dir)
     
     domain_config_path = os.path.join(framework_root, "config", "domain_knowledge.json")
     
@@ -256,9 +230,6 @@ def create_knowledge_retriever(
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    
-    # Test the retriever
     retriever = create_knowledge_retriever()
     
     test_tasks = [

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import time
 from abc import ABC, abstractmethod
 from io import BytesIO
 from typing import Any, Dict, List, Optional, Tuple
@@ -43,14 +44,11 @@ class ImageOptimizer:
     def compress(self, image: Any) -> Tuple[bytes, str]:
         img = image.copy()
         
-        # Resize while maintaining aspect ratio
         width, height = img.size
         if width > self.MAX_SIZE or height > self.MAX_SIZE:
             img.thumbnail((self.MAX_SIZE, self.MAX_SIZE))
         
-        # Encode as JPEG
         buffer = BytesIO()
-        # Convert to RGB if necessary
         if img.mode in ('RGBA', 'LA', 'P'):
             img = img.convert('RGB')
         img.save(buffer, format="JPEG", quality=self.JPEG_QUALITY, optimize=True)
@@ -103,7 +101,7 @@ class QwenVLClient(ModelClient):
         base_url: str = "http://127.0.0.1:8000/v1/chat/completions",
         api_key: str = "EMPTY",
         timeout: int = 120,
-        enable_screen_cache: bool = False,  # Disabled by default - was causing amnesia
+        enable_screen_cache: bool = False,
     ):
         self.model = model
         self.base_url = base_url
@@ -147,7 +145,6 @@ class QwenVLClient(ModelClient):
             "max_tokens": max_tokens,
         }
         
-        # Retry logic for network errors
         max_retries = 3
         last_error = None
         for attempt in range(max_retries):
@@ -172,16 +169,9 @@ class QwenVLClient(ModelClient):
             except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as exc:
                 last_error = exc
                 if attempt < max_retries - 1:
-                    import time
-                    wait_time = 2 ** (attempt + 1)  # 2, 4, 8 seconds
-                    import logging
-                    logging.getLogger(__name__).warning(
-                        "Request failed (attempt %d/%d), retrying in %ds: %s",
-                        attempt + 1, max_retries, wait_time, exc
-                    )
+                    wait_time = 2 ** (attempt + 1)
                     time.sleep(wait_time)
         
-        # All retries failed
         raise last_error
 
     def _attach_image(
@@ -235,4 +225,3 @@ def create_model_client(name: str = "qwen_vl", **kwargs) -> ModelClient:
 
 
 __all__ = ["ModelClient", "QwenVLClient", "create_model_client", "ImageOptimizer"]
-

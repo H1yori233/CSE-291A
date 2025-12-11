@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 from io import BytesIO
 from typing import Dict, List, Optional, Sequence, Tuple, Union
 
@@ -19,16 +18,11 @@ ActionPayload = Union[str, Dict[str, object]]
 class SafeGroundingResolver(GroundingResolver):
     def __init__(self):
         super().__init__()
-        self.logger = logging.getLogger("framework.adapter")
 
-    def resolve(self, action: GroundedAction, observation: "Observation") -> GroundedAction:  # type: ignore[override]
+    def resolve(self, action: GroundedAction, observation: "Observation") -> GroundedAction:
         try:
-            result = super().resolve(action, observation)  # type: ignore[arg-type]
-            self.logger.info("[DEBUG] SafeGroundingResolver: action=%s resolved successfully", action.action)
-            return result
+            return super().resolve(action, observation)
         except Exception as exc:
-            # Fallback to a WAIT to avoid hard failure in runner
-            self.logger.warning("[DEBUG] SafeGroundingResolver: FALLBACK to WAIT due to: %s (action was: %s)", exc, action)
             return GroundedAction(action=ActionType.WAIT, metadata={"fallback": str(exc)})
 
 
@@ -38,11 +32,7 @@ class FrameworkAgentAdapter:
         model_client: ModelClient,
         agent_config: Optional[AgentConfig] = None,
         prompt_mode: str = "coordinate",
-        logger: Optional[logging.Logger] = None,
     ):
-        self.logger = logger or logging.getLogger("framework.adapter")
-        
-        # Import PromptBuilder here to avoid circular import
         from framework.core.prompt_builder import PromptBuilder
         
         self.agent = QwenOSWorldAgent(
@@ -55,13 +45,9 @@ class FrameworkAgentAdapter:
         self._instruction: str = ""
         self._prompt_mode = prompt_mode
 
-    # The OSWorld runner calls agent.reset(runtime_logger, vm_ip=env.vm_ip)
     def reset(self, runtime_logger=None, vm_ip=None):
-        if runtime_logger:
-            self.logger = runtime_logger
         self._initialized = False
         self._instruction = ""
-        # vm_ip is not required for this agent but kept for signature compatibility
 
     def predict(self, instruction: str, obs: Dict) -> Tuple[str, List[ActionPayload]]:
         if not self._initialized or instruction != self._instruction:
@@ -84,7 +70,6 @@ class FrameworkAgentAdapter:
                 image = Image.open(BytesIO(screenshot)).convert("RGB")
                 original_size = image.size
             except (UnidentifiedImageError, OSError):
-                self.logger.warning("Failed to decode screenshot; proceeding without image.")
                 image = None
                 original_size = None
 
@@ -98,31 +83,20 @@ class FrameworkAgentAdapter:
             original_size=original_size,
         )
         
-        # Debug: log parsed a11y elements
-        self.logger.info("[DEBUG] a11y_tree raw length: %d", len(a11y_tree_raw) if a11y_tree_raw else 0)
-        self.logger.info("[DEBUG] Parsed a11y_elements count: %d", len(observation.a11y_elements))
-        # Print all elements for debugging
-        for elem in observation.a11y_elements:
-            self.logger.info("[DEBUG] A11y Element: %s", elem)
-        
         return observation
 
     def _grounded_to_osworld(self, grounded_actions: Sequence[GroundedAction]) -> List[ActionPayload]:
-        self.logger.info("[DEBUG] _grounded_to_osworld: received %d grounded actions", len(grounded_actions))
         translated: List[ActionPayload] = []
-        for i, action in enumerate(grounded_actions):
+        for action in grounded_actions:
             mapped = self._translate_action(action)
-            self.logger.info("[DEBUG] _grounded_to_osworld: action[%d] %s -> mapped=%s", i, action.action, mapped)
             if isinstance(mapped, list):
                 translated.extend(mapped)
             elif mapped:
                 translated.append(mapped)
 
         if not translated:
-            self.logger.warning("[DEBUG] _grounded_to_osworld: no actions translated, defaulting to WAIT")
             translated.append("WAIT")
         
-        self.logger.info("[DEBUG] _grounded_to_osworld: final translated actions: %s", translated)
         return translated
 
     def _translate_action(self, action: GroundedAction) -> Union[ActionPayload, List[ActionPayload], None]:
@@ -199,7 +173,6 @@ class FrameworkAgentAdapter:
 
         return None
 
-    # Map of human-readable key names to pyautogui-compatible keys
     _KEY_NAME_MAP = {
         "comma": ",",
         "period": ".",
@@ -226,7 +199,6 @@ class FrameworkAgentAdapter:
     }
 
     def _normalize_key(self, key: str) -> str:
-        """Normalize key names to pyautogui-compatible format."""
         key_lower = key.lower().strip()
         return self._KEY_NAME_MAP.get(key_lower, key_lower)
 
@@ -276,4 +248,3 @@ def build_adapter(
         api_key=api_key,
     )
     return FrameworkAgentAdapter(model_client=client, agent_config=agent_config)
-

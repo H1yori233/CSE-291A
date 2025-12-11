@@ -28,7 +28,7 @@ class ActionTarget:
     x: Optional[int] = None
     y: Optional[int] = None
     name: Optional[str] = None
-    element_id: Optional[int] = None  # SoM element ID for precise matching
+    element_id: Optional[int] = None
 
     def as_coordinate(self) -> Optional[List[int]]:
         if self.type == "coordinate" and self.x is not None and self.y is not None:
@@ -72,7 +72,6 @@ class Action:
         if "target" in payload:
             t = payload["target"]
             if isinstance(t, dict):
-                # Parse element_id - can be in 'element_id' or 'id' if type is element
                 elem_id = t.get("element_id")
                 if elem_id is None and t.get("type") == "element" and isinstance(t.get("id"), int):
                     elem_id = t.get("id")
@@ -81,26 +80,22 @@ class Action:
                     id=t.get("id") if not isinstance(t.get("id"), int) else None,
                     x=t.get("x"),
                     y=t.get("y"),
-                    name=t.get("name"),  # For element-based targeting
-                    element_id=elem_id,  # SoM element ID
+                    name=t.get("name"),
+                    element_id=elem_id,
                 )
             elif isinstance(t, int):
-                # Model output just an ID number - treat as element ID
                 target = ActionTarget(
                     type="element",
                     element_id=t,
                 )
             elif isinstance(t, str):
-                # Model output a string target - treat as element name
                 target = ActionTarget(
                     type="element",
                     name=t,
                 )
 
-        # Extract keys - try root level first, then fallback to target.keys
         keys = payload.get("keys")
         if keys is None and "target" in payload and isinstance(payload["target"], dict):
-            # Model may have nested keys in target (e.g. {"target": {"type": "hotkey", "keys": [...]}})
             keys = payload["target"].get("keys")
         if isinstance(keys, str):
             keys = [keys]
@@ -143,7 +138,6 @@ def unpack_actions(action_block: Any) -> ActionBatch:
         return ActionBatch(actions=[])
 
     if isinstance(action_block, dict):
-        # Some models emit a single action as dict instead of list
         action_block = [action_block]
 
     if not isinstance(action_block, Iterable):

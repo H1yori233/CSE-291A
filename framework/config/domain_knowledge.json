@@ -1,4 +1,56 @@
 {
+    "os": {
+        "name": "Desktop / File Manager",
+        "general_tips": [
+            "Use SINGLE CLICK to select files/folders; DOUBLE CLICK opens them.",
+            "To rename: Single click to select, then Right click on the ICON -> Rename.",
+            "Do NOT right click on the window title bar or path bar for file operations.",
+            "Ctrl+C to copy, Ctrl+V to paste, Del to move to trash."
+        ],
+        "specific_knowledge": {
+            "rename folder": {
+                "steps": [
+                    "1. Locate the folder icon on the Desktop or in the file list.",
+                    "2. IMPORTANT: SINGLE CLICK the icon once to select it. Do NOT double click.",
+                    "3. Right-click ON THE ICON itself (not the window title).",
+                    "4. Select 'Rename...' from the context menu.",
+                    "5. Type the new name and press Enter."
+                ],
+                "keywords": [
+                    "rename",
+                    "change name",
+                    "folder",
+                    "directory"
+                ]
+            },
+            "create folder": {
+                "steps": [
+                    "1. Right-click on empty space in the Desktop or File Manager window.",
+                    "2. Select 'New Folder'.",
+                    "3. Type the name for the folder and press Enter."
+                ],
+                "keywords": [
+                    "create folder",
+                    "new directory",
+                    "make folder",
+                    "mkdir"
+                ]
+            },
+            "delete file": {
+                "steps": [
+                    "1. Single click the file/folder icon to select it.",
+                    "2. Press the Delete key on your keyboard.",
+                    "3. Alternatively, Right-click the icon and select 'Move to Trash'."
+                ],
+                "keywords": [
+                    "delete",
+                    "trash",
+                    "remove",
+                    "erase"
+                ]
+            }
+        }
+    },
     "vlc": {
         "name": "VLC Media Player",
         "general_tips": [
@@ -833,9 +885,11 @@
             "convert to grayscale": {
                 "steps": [
                     "1. Open your image in GIMP.",
-                    "2. Go to Image → Mode → Grayscale.",
-                    "3. The image will convert to shades of gray; you can undo (Ctrl+Z) to revert.",
-                    "4. Save or export the grayscale image as needed."
+                    "2. Click 'Image' in the top menu bar.",
+                    "3. VERIFY: Ensure the 'Image' menu is actually open and you see the 'Mode' option.",
+                    "4. Hover over 'Mode' to reveal the submenu.",
+                    "5. Click 'Grayscale' in the submenu.",
+                    "6. If the image does not change, check if you accidentally closed the menu and retry."
                 ],
                 "keywords": [
                     "grayscale",
