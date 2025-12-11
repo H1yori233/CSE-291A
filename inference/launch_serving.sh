@@ -30,7 +30,7 @@ python -m vllm.entrypoints.openai.api_server \
     --api-key "EMPTY" \
     --trust-remote-code \
     --gpu-memory-utilization "$GPU_MEM_UTIL" \
-    --max-model-len 3072 \
+    --max-model-len 8192 \
     --max-num-seqs 1 \
     --limit-mm-per-prompt '{"video": 1, "image": 1}' \
     --dtype auto \

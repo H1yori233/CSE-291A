@@ -1,5 +1,4 @@
 DOMAIN_HINTS = {
-    # Media players
     "vlc": (
         "VLC Tips: Preferences via Tools->Preferences (or Ctrl+P). "
         "IMPORTANT: To access advanced settings like 'cone icon', you need to switch from Simple to All mode. "
@@ -9,7 +8,6 @@ DOMAIN_HINTS = {
         "Find 'Display background cone or art' checkbox and uncheck it. Click 'Save' and restart VLC."
     ),
     
-    # Browsers
     "chrome": (
         "Chrome Tips: Settings via address bar: type 'chrome://settings' + Enter. "
         "Search engine settings in left sidebar. Click 'Set as default' after selecting."
@@ -19,7 +17,6 @@ DOMAIN_HINTS = {
         "Search settings under 'Search' section."
     ),
     
-    # File management
     "files": (
         "Files Tips: DOUBLE_CLICK folders/icons to open (not single click). "
         "Ctrl+L for location bar. Right-click for context menu."
@@ -29,13 +26,11 @@ DOMAIN_HINTS = {
         "Sidebar has quick locations. Ctrl+L to type path."
     ),
     
-    # Terminal
     "terminal": (
         "Terminal Tips: Open with Ctrl+Alt+T. Type commands and press Enter. "
         "Use 'cd' to navigate, 'ls' to list files."
     ),
     
-    # Office applications
     "libreoffice_writer": (
         "Writer Tips: Select text first, then format. "
         "Format->Paragraph->Indents & Spacing for line spacing. "
@@ -50,25 +45,21 @@ DOMAIN_HINTS = {
         "Insert->Image for adding pictures."
     ),
     
-    # Graphics
     "gimp": (
         "GIMP Tips: Tools in left panel. Layers panel on right. "
         "File->Export As to save in different formats."
     ),
     
-    # System settings
     "gnome_settings": (
         "Settings Tips: Categories in left sidebar. "
         "Search bar at top to find settings quickly."
     ),
     
-    # Desktop general
     "desktop": (
         "Desktop Tips: DOUBLE_CLICK icons to open (not single click). "
         "Right-click for context menu. Files app in dock for file management."
     ),
     
-    # Default (minimal hint)
     "default": (
         "Tips: DOUBLE_CLICK icons to open. Ctrl+Alt+T for terminal. "
         "If stuck, try different approach."
@@ -92,7 +83,6 @@ DOMAIN_KEYWORDS = {
 
 
 def detect_domain(a11y_elements: list, instruction: str) -> str:
-    # Check a11y element names for app signatures
     for elem in a11y_elements:
         name = (elem.name or "").lower()
         
@@ -125,4 +115,3 @@ def get_domain_hint(domain: str, instruction: str = "") -> str:
             pass
     
     return DOMAIN_HINTS.get(domain, DOMAIN_HINTS["default"])
-

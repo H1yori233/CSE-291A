@@ -1,12 +1,9 @@
 from __future__ import annotations
 
 import json
-import logging
 import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
-
-logger = logging.getLogger("framework.agent")
 
 from framework.actions import (
     ActionBatch,
@@ -38,8 +35,6 @@ class AgentStepOutput:
 
 
 class QwenOSWorldAgent:
-    """Agent that follows the GUIDE.md architecture."""
-
     def __init__(
         self,
         model_client: ModelClient,
@@ -64,7 +59,6 @@ class QwenOSWorldAgent:
         self._step = 0
         self.memory = AgentMemory()
         
-        # Clear model cache if available
         if hasattr(self.model, 'reset_cache'):
             self.model.reset_cache()
             
@@ -76,10 +70,8 @@ class QwenOSWorldAgent:
 
         self._step += 1
         
-        # LOOP BREAKER: Check loop severity BEFORE calling model
         loop_severity = self.memory.get_loop_severity()
         if loop_severity >= 3:
-            logger.warning("[LOOP BREAKER] Fatal loop detected (severity: %d), forcing alternative action", loop_severity)
             from framework.actions import ActionType
             alternative_action = self._get_loop_breaker_action()
             self.memory.note_actions(self._step, [alternative_action])
@@ -99,7 +91,7 @@ class QwenOSWorldAgent:
             max_steps=self.config.max_steps,
             history=history,
             observation=observation,
-            memory=self.memory,  # Pass memory for detailed history & loop detection
+            memory=self.memory,
         )
         raw = self.model.generate(
             messages,
@@ -108,15 +100,9 @@ class QwenOSWorldAgent:
             image=observation.screenshot,
         )
         
-        # DEBUG: Log raw model response
-        logger.info("[DEBUG] Raw model response:\n%s", raw[:2000] if len(raw) > 2000 else raw)
-        
         try:
             payload = self._parse_response(raw)
-            logger.info("[DEBUG] Parsed payload: %s", json.dumps(payload, indent=2, ensure_ascii=False)[:1000])
         except Exception as e:
-            logger.error("[DEBUG] Failed to parse response: %s", e)
-            # Return a WAIT action on parse failure
             from framework.actions import ActionType
             return AgentStepOutput(
                 raw_response=raw,
@@ -129,24 +115,14 @@ class QwenOSWorldAgent:
         if isinstance(plan_update, str) and plan_update.strip():
             self.plan.update_from_text(plan_update)
         
-        # Extract and save next_element_hint for element prioritization in next step
         next_hint = payload.get("next_element_hint")
         if next_hint and isinstance(next_hint, str) and next_hint.strip():
             self.memory.set_next_element_hint(next_hint.strip())
         else:
-            # Clear hint if not provided (don't carry over stale hints)
             self.memory.set_next_element_hint(None)
         
         actions = unpack_actions(payload.get("actions"))
-        logger.info("[DEBUG] Unpacked actions count: %d", len(actions))
-        for i, act in enumerate(actions):
-            logger.info("[DEBUG] Action[%d]: %s", i, act)
-        
         grounded = [self.grounder.resolve(action, observation) for action in actions]
-        logger.info("[DEBUG] Grounded actions count: %d", len(grounded))
-        for i, ga in enumerate(grounded):
-            logger.info("[DEBUG] GroundedAction[%d]: action=%s, coord=%s, text=%s", 
-                       i, ga.action, ga.coordinate, ga.text)
         
         self.memory.note_actions(self._step, grounded)
         return AgentStepOutput(
@@ -195,7 +171,6 @@ class QwenOSWorldAgent:
             fenced = re.search(r"```(.*?)```", text, re.DOTALL)
         if fenced:
             text = fenced.group(1)
-        # Remove trailing commas in JSON arrays and objects which are common in LLM output
         text = re.sub(r",\s*([\]}])", r"\1", text)
         try:
             data = json.loads(text)
@@ -208,26 +183,13 @@ class QwenOSWorldAgent:
         return data
 
     def _get_loop_breaker_action(self) -> GroundedAction:
-        """Generate an alternative action when stuck in a loop.
-        
-        Strategies (cycled based on loop count):
-        1. Press Escape to dismiss overlays/dialogs
-        2. Scroll down to reveal new elements
-        3. Press Tab to move focus
-        """
         from framework.actions import ActionType
         
         strategy = self.memory.loop_count % 3
         
         if strategy == 0:
-            # Strategy 1: Press Escape to dismiss overlays
-            logger.info("[LOOP BREAKER] Strategy: Press Escape to dismiss potential overlay")
             return GroundedAction(action=ActionType.PRESS_KEY, key="escape")
         elif strategy == 1:
-            # Strategy 2: Scroll down to reveal new elements
-            logger.info("[LOOP BREAKER] Strategy: Scroll down to reveal hidden elements")
             return GroundedAction(action=ActionType.SCROLL_DOWN, scroll_amount=300)
         else:
-            # Strategy 3: Press Tab to change focus
-            logger.info("[LOOP BREAKER] Strategy: Press Tab to change focus")
             return GroundedAction(action=ActionType.PRESS_KEY, key="tab")

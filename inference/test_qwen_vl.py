@@ -8,7 +8,6 @@ from typing import Optional
 
 from PIL import Image
 
-# Import our optimized client
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from framework.core.model_client import QwenVLClient, ImageOptimizer
 
@@ -117,11 +116,9 @@ def main() -> None:
     
     args = parser.parse_args()
     
-    # Load image
     print(f"📷 Loading image: {args.image}")
     image = load_image(args.image)
     
-    # Create optimized client
     print(f"🔌 Connecting to: {args.server_url}")
     client = QwenVLClient(
         model=args.model,

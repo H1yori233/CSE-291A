@@ -1,5 +1,3 @@
-"""Core components of the refactored framework."""
-
 from .agent import AgentConfig, AgentStepOutput, QwenOSWorldAgent
 from .loop import AgentLoop, LoopResult
 from .model_client import ModelClient, QwenVLClient, create_model_client
