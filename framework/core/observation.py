@@ -38,6 +38,18 @@ class A11yElement:
             cx, cy = int(x + w / 2), int(y + h / 2)
             return f'[{self.id}] "{label}" ({self.tag}) @ ({cx}, {cy})'
         return f'[{self.id}] "{label}" ({self.tag})'
+    
+    def format_compact(self) -> str:
+        """Ultra-compact format: [id]tag|name|(x,y) - saves ~70% tokens"""
+        label = self.name or self.text or self.tag
+        # Truncate long names
+        if len(label) > 30:
+            label = label[:27] + "..."
+        if self.bbox:
+            x, y, w, h = self.bbox
+            cx, cy = int(x + w / 2), int(y + h / 2)
+            return f"[{self.id}]{self.tag}|{label}|({cx},{cy})"
+        return f"[{self.id}]{self.tag}|{label}"
 
 
 @dataclass
@@ -118,8 +130,17 @@ class Observation:
         import logging
         logger = logging.getLogger("framework.observation")
         
-        needle = name.lower().strip()
         original_name = name  # Keep original for context hints
+        
+        # FIRST: Extract and remove coordinate hint (e.g., "@ (1771, 79)")
+        coord_hint = None
+        coord_match = re.search(r'@\s*\((\d+),\s*(\d+)\)', original_name)
+        if coord_match:
+            coord_hint = (int(coord_match.group(1)), int(coord_match.group(2)))
+            # Remove coord hint from name for cleaner matching
+            name = re.sub(r'\s*@\s*\(\d+,\s*\d+\)', '', name).strip()
+        
+        needle = name.lower().strip()
         
         # Try to extract quoted string if model included extra formatting
         quoted_match = re.search(r'"([^"]+)"', name)
@@ -128,19 +149,13 @@ class Observation:
         
         # Extract type hint if present (e.g., "Close (push-button)" -> type_hint = "push-button")
         type_hint = None
-        type_match = re.search(r'\(([^)]+)\)', original_name)
+        type_match = re.search(r'\(([^)]+)\)', name)
         if type_match:
             type_hint = type_match.group(1).lower().strip()
             # Remove type hint from needle for cleaner matching
-            needle_without_type = re.sub(r'\s*\([^)]+\)\s*(@.*)?$', '', needle).strip()
+            needle_without_type = re.sub(r'\s*\([^)]+\)\s*$', '', needle).strip()
             if needle_without_type:
                 needle = needle_without_type
-        
-        # Extract coordinate hint if present (e.g., "@ (1771, 79)")
-        coord_hint = None
-        coord_match = re.search(r'@\s*\((\d+),\s*(\d+)\)', original_name)
-        if coord_match:
-            coord_hint = (int(coord_match.group(1)), int(coord_match.group(2)))
         
         # Find ALL matching elements first
         exact_matches = []
@@ -156,15 +171,34 @@ class Observation:
                 exact_matches.append(elem)
             # Fuzzy match - only if no exact match found
             elif fuzzy:
-                # needle is substring of element name (e.g., "close" in "close window")
-                if needle in elem_name or needle in elem_text:
-                    fuzzy_matches.append(elem)
-                # element name is substring of needle - REQUIRE minimum length to avoid false matches
-                # e.g., prevent "terminal" matching "initial terminal size - width field"  
-                elif elem_name and len(elem_name) >= 5 and elem_name in needle:
-                    # Only match if element name is a significant portion of the query
-                    if len(elem_name) >= len(needle) * 0.4:  # At least 40% of query length
+                # Method 1: needle is substring of element name (e.g., "close" in "close window")
+                # Require that element name is not significantly longer than needle
+                if needle in elem_name:
+                    length_ratio = len(needle) / len(elem_name) if elem_name else 0
+                    if length_ratio >= 0.7:  # needle should be at least 70% of elem_name length
                         fuzzy_matches.append(elem)
+                elif needle in elem_text:
+                    length_ratio = len(needle) / len(elem_text) if elem_text else 0
+                    if length_ratio >= 0.7:
+                        fuzzy_matches.append(elem)
+                # Method 2: element name is substring of needle
+                elif elem_name and len(elem_name) >= 5 and elem_name in needle:
+                    if len(elem_name) >= len(needle) * 0.4:
+                        fuzzy_matches.append(elem)
+                # Method 3: Word-level matching - for cases like "Bing" matching "Microsoft Bing"
+                # or "More actions for Bing" matching "More actions for Microsoft Bing"
+                else:
+                    # Extract key words (skip common words)
+                    skip_words = {'the', 'a', 'an', 'for', 'to', 'of', 'in', 'on', 'with', 'by', 'button', 'icon', 'menu'}
+                    needle_words = set(w for w in needle.split() if w not in skip_words and len(w) > 2)
+                    elem_words = set(w for w in elem_name.split() if w not in skip_words and len(w) > 2)
+                    
+                    if needle_words and elem_words:
+                        # Check how many words overlap
+                        overlap = needle_words & elem_words
+                        # Match if significant overlap (at least 60% of needle words found in elem)
+                        if len(overlap) >= len(needle_words) * 0.6 and len(overlap) >= 2:
+                            fuzzy_matches.append(elem)
         
         # Use exact matches first, fallback to fuzzy
         matches = exact_matches if exact_matches else fuzzy_matches
@@ -180,10 +214,16 @@ class Observation:
                     return float('inf')
                 return abs(center[0] - coord_hint[0]) + abs(center[1] - coord_hint[1])
             matches.sort(key=distance_to_hint)
-            if distance_to_hint(matches[0]) < 50:  # Must be close to hint
-                logger.info("[DEBUG] Selected '%s' at %s (closest to hint %s)", 
-                           matches[0].name, matches[0].center(), coord_hint)
-                return matches[0].center()
+            best_match = matches[0]
+            best_distance = distance_to_hint(best_match)
+            # Use the closest match, but warn if it's far from hint
+            if best_distance < 300:  # Reasonable tolerance
+                logger.info("[DEBUG] Selected '%s' at %s (distance %d from hint %s)", 
+                           best_match.name, best_match.center(), best_distance, coord_hint)
+                return best_match.center()
+            else:
+                logger.warning("[DEBUG] Best match '%s' is %d pixels from hint, may be wrong",
+                              best_match.name, best_distance)
         
         # If we have type hint, filter by element type
         if type_hint and len(matches) > 1:
@@ -261,7 +301,7 @@ class Observation:
         else:
             interactive_elements = self.a11y_elements
         
-        lines = ["Clickable Elements (use EXACT element name in target):"]
+        lines = ["AVAILABLE ELEMENTS (use element_id number to target):"]
         for elem in interactive_elements[:max_elements]:
             lines.append(str(elem))
         
@@ -269,6 +309,116 @@ class Observation:
             lines.append(f"... and {len(interactive_elements) - max_elements} more elements")
         
         return "\n".join(lines)
+    
+    def format_a11y_compact(self, max_chars: int = 3000, filter_containers: bool = True) -> str:
+        """Ultra-compact format with char limit instead of element count.
+        Format: [id]tag|name|(x,y) per line. Model outputs element_id."""
+        if not self.a11y_elements:
+            return ""
+        
+        if filter_containers:
+            elements = [e for e in self.a11y_elements if self.is_interactive_element(e)]
+        else:
+            elements = self.a11y_elements
+        
+        lines = ["ELEMENTS (use name + approximate coordinates):"]
+        total_chars = len(lines[0])
+        
+        for elem in elements:
+            line = elem.format_compact()
+            if total_chars + len(line) + 1 > max_chars:
+                lines.append(f"...+{len(elements) - len(lines) + 1} more")
+                break
+            lines.append(line)
+            total_chars += len(line) + 1
+        
+        return "\n".join(lines)
+    
+    def format_a11y_prioritized(
+        self, 
+        max_chars: int = 3000, 
+        filter_containers: bool = True,
+        next_element_hint: Optional[str] = None,
+        last_coordinate: Optional[Tuple[int, int]] = None
+    ) -> str:
+        """Prioritized format that sorts elements by relevance.
+        
+        Sorting criteria:
+        1. Name similarity to next_element_hint (if provided)
+        2. Spatial proximity to last_coordinate (if provided)
+        
+        This helps the model find the element it's looking for faster,
+        especially in complex nested menus.
+        """
+        import math
+        
+        if not self.a11y_elements:
+            return ""
+        
+        if filter_containers:
+            elements = [e for e in self.a11y_elements if self.is_interactive_element(e)]
+        else:
+            elements = self.a11y_elements
+        
+        # Calculate relevance score for each element
+        def score_element(elem: A11yElement) -> float:
+            score = 0.0
+            elem_name = (elem.name or "").lower()
+            
+            # Name similarity score (0-100)
+            if next_element_hint:
+                hint_lower = next_element_hint.lower()
+                # Exact match: highest priority
+                if elem_name == hint_lower:
+                    score += 100
+                # Hint is a substring of element name
+                elif hint_lower in elem_name:
+                    score += 80
+                # Element name is a substring of hint  
+                elif elem_name and elem_name in hint_lower:
+                    score += 60
+                # Word overlap
+                else:
+                    hint_words = set(hint_lower.split())
+                    elem_words = set(elem_name.split())
+                    overlap = hint_words & elem_words
+                    if overlap:
+                        score += 40 * (len(overlap) / max(len(hint_words), 1))
+            
+            # Spatial proximity score (0-50)
+            # Elements closer to last click are more likely to be relevant
+            if last_coordinate and elem.bbox:
+                elem_center = elem.center()
+                if elem_center:
+                    dx = elem_center[0] - last_coordinate[0]
+                    dy = elem_center[1] - last_coordinate[1]
+                    distance = math.sqrt(dx*dx + dy*dy)
+                    # Closer elements get higher score, max 50 points at distance 0
+                    # Score decreases as distance increases, reaching ~0 at 500px
+                    proximity_score = 50 * max(0, 1 - distance / 500)
+                    score += proximity_score
+            
+            return score
+        
+        # Sort elements by score (descending) while maintaining original order for equal scores
+        scored_elements = [(score_element(e), i, e) for i, e in enumerate(elements)]
+        scored_elements.sort(key=lambda x: (-x[0], x[1]))  # Sort by score desc, then by original index
+        sorted_elements = [e for _, _, e in scored_elements]
+        
+        # Format output
+        lines = ["ELEMENTS (prioritized by relevance):"]
+        total_chars = len(lines[0])
+        
+        for elem in sorted_elements:
+            line = elem.format_compact()
+            if total_chars + len(line) + 1 > max_chars:
+                lines.append(f"...+{len(sorted_elements) - len(lines) + 1} more")
+                break
+            lines.append(line)
+            total_chars += len(line) + 1
+        
+        return "\n".join(lines)
+
 
 
 def parse_a11y_tree(a11y_tree_xml: str, platform: str = "ubuntu") -> List[A11yElement]:

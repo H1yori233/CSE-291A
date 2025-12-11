@@ -249,29 +249,9 @@ def create_knowledge_retriever(
     
     domain_config_path = os.path.join(framework_root, "config", "domain_knowledge.json")
     
-    # Log paths for debugging
-    logger.info(f"[DEBUG] Framework root: {framework_root}")
-    logger.info(f"[DEBUG] Domain config path: {domain_config_path}")
-    logger.info(f"[DEBUG] Domain config exists: {os.path.exists(domain_config_path)}")
-    
-    # Try multiple paths for RAG knowledge
-    project_root = os.path.dirname(framework_root)  # CSE-291A/
-    rag_paths = [
-        os.path.join(framework_root, "config", "rag_knowledge.json"),
-        os.path.join(project_root, "OSWorld", "mm_agents", "mobileagent_v3", 
-                     "Perplexica_rag_knowledge_verified.json"),
-    ]
-    
-    rag_path = None
-    for path in rag_paths:
-        logger.info(f"[DEBUG] Checking RAG path: {path} - exists: {os.path.exists(path)}")
-        if os.path.exists(path):
-            rag_path = path
-            break
-    
     return KnowledgeRetriever(
         domain_config_path=domain_config_path,
-        rag_knowledge_path=rag_path
+        rag_knowledge_path=None
     )
 
 

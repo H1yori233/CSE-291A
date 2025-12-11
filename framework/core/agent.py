@@ -114,6 +114,14 @@ class QwenOSWorldAgent:
         if isinstance(plan_update, str) and plan_update.strip():
             self.plan.update_from_text(plan_update)
         
+        # Extract and save next_element_hint for element prioritization in next step
+        next_hint = payload.get("next_element_hint")
+        if next_hint and isinstance(next_hint, str) and next_hint.strip():
+            self.memory.set_next_element_hint(next_hint.strip())
+        else:
+            # Clear hint if not provided (don't carry over stale hints)
+            self.memory.set_next_element_hint(None)
+        
         actions = unpack_actions(payload.get("actions"))
         logger.info("[DEBUG] Unpacked actions count: %d", len(actions))
         for i, act in enumerate(actions):

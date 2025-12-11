@@ -28,6 +28,7 @@ class ActionTarget:
     x: Optional[int] = None
     y: Optional[int] = None
     name: Optional[str] = None
+    element_id: Optional[int] = None  # SoM element ID for precise matching
 
     def as_coordinate(self) -> Optional[List[int]]:
         if self.type == "coordinate" and self.x is not None and self.y is not None:
@@ -35,7 +36,7 @@ class ActionTarget:
         return None
     
     def is_element(self) -> bool:
-        return self.type == "element" and self.name is not None
+        return self.type == "element" and (self.name is not None or self.element_id is not None)
 
 
 @dataclass
@@ -71,12 +72,23 @@ class Action:
         if "target" in payload:
             t = payload["target"]
             if isinstance(t, dict):
+                # Parse element_id - can be in 'element_id' or 'id' if type is element
+                elem_id = t.get("element_id")
+                if elem_id is None and t.get("type") == "element" and isinstance(t.get("id"), int):
+                    elem_id = t.get("id")
                 target = ActionTarget(
                     type=t.get("type", "coordinate"),
-                    id=t.get("id"),
+                    id=t.get("id") if not isinstance(t.get("id"), int) else None,
                     x=t.get("x"),
                     y=t.get("y"),
                     name=t.get("name"),  # For element-based targeting
+                    element_id=elem_id,  # SoM element ID
+                )
+            elif isinstance(t, int):
+                # Model output just an ID number - treat as element ID
+                target = ActionTarget(
+                    type="element",
+                    element_id=t,
                 )
             elif isinstance(t, str):
                 # Model output a string target - treat as element name

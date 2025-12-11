@@ -189,6 +189,23 @@
             "Use the Styles and Formatting sidebar (F11) to apply consistent headings and paragraph styles."
         ],
         "specific_knowledge": {
+            "export as pdf": {
+                "steps": [
+                    "Step 1: Click 'File' menu at top left.",
+                    "Step 2: Hover over 'Export As' submenu (NOT 'Export...' which is different!).",
+                    "Step 3: Click 'Export as PDF...' from the submenu.",
+                    "Step 4: In the PDF Options dialog that opens, click 'Export' button.",
+                    "Step 5: In the file save dialog, keep the filename and click 'Save'.",
+                    "CRITICAL: 'Export...' and 'Export As' are DIFFERENT menu items - use 'Export As'!"
+                ],
+                "keywords": [
+                    "pdf",
+                    "export",
+                    "save as pdf",
+                    "convert to pdf",
+                    "export as pdf"
+                ]
+            },
             "change font": {
                 "steps": [
                     "1. Select the text you want to modify.",

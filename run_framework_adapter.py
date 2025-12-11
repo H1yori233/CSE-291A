@@ -3,7 +3,7 @@ Runner that plugs the framework's Qwen-based agent into OSWorld without
 modifying existing benchmark code. Run from the OSWorld directory:
 
     uv run python run_framework_adapter.py \
-        --base-url http://194.68.245.40:22093/v1/chat/completions \
+        --base-url http://69.30.85.100:22013/v1/chat/completions \
         --model Qwen/Qwen3-VL-8B-Instruct-FP8 \
         --domain onboard
 """

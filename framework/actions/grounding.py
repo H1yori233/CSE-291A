@@ -112,9 +112,62 @@ class GroundingResolver:
         if target is None:
             return None
 
-        target_type = (target.type or "mark").lower()
+        target_type = (target.type or "").lower()
         
-        # Handle coordinate type
+        import logging
+        logger = logging.getLogger("framework.grounding")
+        
+        # Build coord hint if coordinates are provided (for disambiguation)
+        coord_hint = None
+        if target.x is not None and target.y is not None:
+            coord_hint = (int(target.x), int(target.y))
+        
+        # PRIORITY 1: Name + coord hint (most robust approach)
+        # Search by name in full a11y tree, use coord to disambiguate if multiple matches
+        if target.name:
+            name_with_hint = target.name
+            if coord_hint:
+                # Append coord hint for lookup_a11y_element_by_name to use
+                name_with_hint = f"{target.name} @ ({coord_hint[0]}, {coord_hint[1]})"
+            logger.info("[DEBUG] Looking up by name+coord: '%s'", name_with_hint)
+            coords = observation.lookup_a11y_element_by_name(name_with_hint, fuzzy=True)
+            if coords:
+                logger.info("[DEBUG] Found '%s' at coords: %s", target.name, coords)
+                return coords
+            # Also try som_elements
+            coords = observation.lookup_named_element(target.name)
+            if coords:
+                logger.info("[DEBUG] Found '%s' in som_elements at: %s", target.name, coords)
+                return coords
+            logger.warning("[DEBUG] Name '%s' not found", target.name)
+        
+        # PRIORITY 2: Element ID only (fallback if name not given)
+        if target.element_id is not None:
+            elem_id = target.element_id
+            logger.info("[DEBUG] Looking up by element_id: [%d]", elem_id)
+            for elem in observation.a11y_elements:
+                if elem.id == elem_id:
+                    coords = elem.center()
+                    if coords:
+                        logger.info("[DEBUG] Found element [%d] '%s' at coords: %s", 
+                                   elem_id, elem.name, coords)
+                        return coords
+            logger.warning("[DEBUG] Element ID [%d] NOT FOUND in %d elements", 
+                          elem_id, len(observation.a11y_elements))
+        
+        # PRIORITY 3: Direct x,y coordinates (fallback if name not found, or name not given)
+        if coord_hint:
+            coord = [coord_hint[0], coord_hint[1]]
+            if target.name:
+                logger.warning("[DEBUG] Name '%s' not found, falling back to coords: %s", target.name, coord)
+            else:
+                logger.info("[DEBUG] Using direct coordinates: %s", coord)
+            if observation.original_size:
+                scaled_x, scaled_y = observation.scale_coordinates(coord[0], coord[1])
+                return [scaled_x, scaled_y]
+            return coord
+        
+        # Handle coordinate type (legacy format)
         if target_type == "coordinate":
             coord = target.as_coordinate()
             if coord and observation.original_size:
@@ -123,28 +176,50 @@ class GroundingResolver:
                 return [scaled_x, scaled_y]
             return coord
         
-        # Handle element type - lookup by name in a11y tree
-        if target_type == "element" and target.name:
+        # Handle element type - PRIORITY: ID > name
+        if target_type == "element":
             import logging
             logger = logging.getLogger("framework.grounding")
-            logger.info("[DEBUG] Looking for element: '%s' in %d a11y_elements", 
-                       target.name, len(observation.a11y_elements))
             
-            coords = observation.lookup_a11y_element_by_name(target.name, fuzzy=True)
-            if coords:
-                logger.info("[DEBUG] Found element '%s' at coords: %s", target.name, coords)
-                return coords
+            # First: Try element_id (SoM ID) - PRECISE, NO GUESSING
+            if target.element_id is not None:
+                elem_id = target.element_id
+                logger.info("[DEBUG] Looking for element by ID: [%d]", elem_id)
+                
+                # Find element by ID
+                for elem in observation.a11y_elements:
+                    if elem.id == elem_id:
+                        coords = elem.center()
+                        if coords:
+                            logger.info("[DEBUG] Found element [%d] '%s' at coords: %s", 
+                                       elem_id, elem.name, coords)
+                            return coords
+                
+                logger.warning("[DEBUG] Element ID [%d] NOT FOUND in %d elements", 
+                              elem_id, len(observation.a11y_elements))
+                return None
             
-            # Fallback: try som_elements
-            coords = observation.lookup_named_element(target.name)
-            if coords:
-                logger.info("[DEBUG] Found element '%s' in som_elements at: %s", target.name, coords)
-                return coords
+            # Fallback: Try name matching (less reliable)
+            if target.name:
+                logger.info("[DEBUG] Looking for element by name: '%s' in %d a11y_elements", 
+                           target.name, len(observation.a11y_elements))
+                
+                coords = observation.lookup_a11y_element_by_name(target.name, fuzzy=True)
+                if coords:
+                    logger.info("[DEBUG] Found element '%s' at coords: %s", target.name, coords)
+                    return coords
+                
+                # Fallback: try som_elements
+                coords = observation.lookup_named_element(target.name)
+                if coords:
+                    logger.info("[DEBUG] Found element '%s' in som_elements at: %s", target.name, coords)
+                    return coords
+                
+                # Log available element names for debugging
+                available_names = [e.name for e in observation.a11y_elements[:20] if e.name]
+                logger.warning("[DEBUG] Element '%s' NOT FOUND. Available names: %s", 
+                              target.name, available_names)
             
-            # Log available element names for debugging
-            available_names = [e.name for e in observation.a11y_elements[:20] if e.name]
-            logger.warning("[DEBUG] Element '%s' NOT FOUND. Available names: %s", 
-                          target.name, available_names)
             return None
         
         # Handle mark type (SoM IDs)

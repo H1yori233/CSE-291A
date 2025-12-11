@@ -26,10 +26,16 @@ class AgentMemory:
     plan: Plan = field(default_factory=Plan)
     recent: Deque[MemoryEntry] = field(default_factory=lambda: deque(maxlen=10))
     reflection_count: int = 0
+    # For element prioritization: model's hint about the next element to interact with
+    next_element_hint: Optional[str] = None
+    # Coordinate of the last click action (for spatial proximity sorting)
+    last_coordinate: Optional[List[int]] = None
+
 
     def note_actions(self, step: int, actions: Sequence[GroundedAction]):
         if not actions:
             return
+        click_types = {ActionType.LEFT_CLICK, ActionType.RIGHT_CLICK, ActionType.DOUBLE_CLICK}
         for act in actions:
             target_name = act.metadata.get("element_name") if act.metadata else None
             summary = _summarise_single(act)
@@ -41,7 +47,17 @@ class AgentMemory:
                 coordinate=act.coordinate,
             )
             self.recent.append(entry)
+            # Update last_coordinate for click actions (used for element prioritization)
+            if act.action in click_types and act.coordinate:
+                self.last_coordinate = act.coordinate
             logger.info("[DEBUG] Memory recorded: Step %d, %s (target=%s)", step, summary, target_name)
+    
+    def set_next_element_hint(self, hint: Optional[str]):
+        """Set the model's prediction for the next element to interact with."""
+        self.next_element_hint = hint
+        if hint:
+            logger.info("[DEBUG] Next element hint set: %s", hint)
+
 
     def recent_summary(self) -> str:
         if not self.recent:

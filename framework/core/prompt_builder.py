@@ -43,7 +43,10 @@ class PromptBuilder:
         observation: Observation,
         memory: Optional[AgentMemory] = None,
     ) -> List[Dict[str, str]]:
-        observation_text = self._format_observation(observation)
+        observation_text = self._format_observation(observation, memory=memory)
+        
+        # Debug: log the compact element list sent to model
+        logger.info("[DEBUG] Observation text sent to model (first 1500 chars):\n%s", observation_text[:1500] if observation_text else "EMPTY")
         
         # Use detailed history if memory is provided, otherwise use simple history string
         if memory:
@@ -100,12 +103,25 @@ class PromptBuilder:
         )
         return [self.system_message(), {"role": "user", "content": user_prompt}]
 
-    def _format_observation(self, observation: Observation) -> str:
+    def _format_observation(self, observation: Observation, memory: Optional[AgentMemory] = None) -> str:
         parts: List[str] = []
         
-        # If we have parsed a11y elements, use them (preferred for element-based grounding)
+        # If we have parsed a11y elements, use prioritized format when hints are available
         if observation.a11y_elements:
-            parts.append(observation.format_a11y_elements(max_elements=20))
+            # Check if we have prioritization hints from memory
+            if memory and (memory.next_element_hint or memory.last_coordinate):
+                # Use prioritized format with sorting by relevance
+                last_coord = tuple(memory.last_coordinate) if memory.last_coordinate else None
+                parts.append(observation.format_a11y_prioritized(
+                    max_chars=3000,
+                    next_element_hint=memory.next_element_hint,
+                    last_coordinate=last_coord
+                ))
+                logger.info("[DEBUG] Using prioritized element list (hint=%s, last_coord=%s)", 
+                           memory.next_element_hint, last_coord)
+            else:
+                # Use compact format: [id]tag|name|(x,y) - stay within model context limit
+                parts.append(observation.format_a11y_compact(max_chars=3000))
         elif observation.som_elements:
             # Fallback to SoM elements
             visible = [
@@ -122,3 +138,4 @@ class PromptBuilder:
             parts.append("Accessibility Tree:\n" + snippet)
         
         return "\n".join(parts)
+
